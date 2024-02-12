@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "hungrypouches:pouch_mob"
+  },
+  "pattern": [
+    "RHB",
+    "LCL",
+    "LLL"
+  ],
+  "key": {
+    "R": {
+      "item": "minecraft:rotten_flesh"
+    },
+    "H": {
+      "item": "hungrypouches:hungering_core"
+    },
+    "B": {
+      "item": "minecraft:bone"
+    },
+    "L": {
+      "type": "forge:ore_dict",
+      "ore": "leather"
+    },
+    "C": {
+      "type": "forge:ore_dict",
+      "ore": "chestWood"
+    }
+  },
+  "conditions": [
+    {
+      "type": "item_exists",
+      "item": "hungrypouches:pouch_mob"
+    }
+  ]
+}

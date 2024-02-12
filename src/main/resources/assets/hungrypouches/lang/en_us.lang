@@ -1,0 +1,50 @@
+# Config
+config.hungrypouches:general=-General Settings-
+config.hungrypouches:enchantments=-Pouch Enchants-
+config.hungrypouches:item_whitelist=Item Whitelist
+config.hungrypouches:pouch_crop=Crop Pouch
+config.hungrypouches:pouch_mob=Mob Pouch
+config.hungrypouches:pouch_ore=Ore Pouch
+config.hungrypouches:pouch_skeletal=Skeletal Pouch
+config.hungrypouches:pouch_void=Void Pouch (WIP)
+
+# Items
+item.hungrypouches:hungering_core.name=Hungering Core
+item.hungrypouches:pouch_crop.name=Herbivorous Pouch
+item.hungrypouches:pouch_mob.name=Carnivorous Pouch
+item.hungrypouches:pouch_ore.name=Saxivorous Pouch
+item.hungrypouches:pouch_void.name=Consuming Pouch
+item.hungrypouches:pouch_skeletal.name=Skeletal Hungry Pouch
+
+# Enchantments
+enchantment.hungrypouches:gluttonous=Gluttonous
+enchantment.hungrypouches:insatiable=Insatiable
+
+# Tooltips
+tooltip.hungrypouches:enabled=§4§lFeasting
+tooltip.hungrypouches:feeding=§4§lFeeding
+tooltip.hungrypouches:disabled=§8§oSleeping
+tooltip.hungrypouches:slotinfo=%d/%d Slots Used
+tooltip.hungrypouches:empty=Empty
+tooltip.hungrypouches:contents=Contents:
+tooltip.hungrypouches:info=Hold §bSHIFT§7 for info.
+tooltip.hungrypouches:usage=Hold §bCTRL§7 for usage.
+tooltip.hungrypouches:enableinfo=Use while sneaking to Enable/Disable the pouch.
+tooltip.hungrypouches:transferinfo=Use on inventory while sneaking to transfer items.
+tooltip.hungrypouches:shuffleinfo=Swing the pouch to shuffle contents.
+tooltip.hungrypouches:pouch_crop.desc=§4§oHungers for crops and seeds.
+tooltip.hungrypouches:pouch_mob.desc=§4§oHungers for mob drops.
+tooltip.hungrypouches:pouch_ore.desc=§4§oHungers for ores and gems.
+tooltip.hungrypouches:pouch_skeletal.desc=§4§oFeeds any stored §r§4§lFeasting §r§4§ohungry pouches.
+tooltip.hungrypouches:pouch_void.desc=§4§oWhen feasting, will void common items.
+
+enchantment.hungrypouches.gluttonous.desc=Increases the number of slots in hungry pouches.
+enchantment.hungrypouches.insatiable.desc=Increases stack size of items in hungry pouches.
+
+# Sounds
+subtitle.hungrypouches:april_1_pickup=Hungry Pouch eats
+
+# Chat
+chat.hungrypouches:disabled=§8The pouch falls asleep.
+chat.hungrypouches:enabled=§4The pouch hungers.
+chat.hungrypouches:biting=The pouch bites at your fingers.

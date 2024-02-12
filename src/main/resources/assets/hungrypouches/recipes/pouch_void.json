@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "hungrypouches:pouch_void"
+  },
+  "pattern": [
+    "CHN",
+    "LBL",
+    "LLL"
+  ],
+  "key": {
+    "C": {
+      "type": "forge:ore_dict",
+      "ore": "cobblestone"
+    },
+    "H": {
+      "item": "hungrypouches:hungering_core"
+    },
+    "N": {
+      "type": "forge:ore_dict",
+      "ore": "netherrack"
+    },
+    "L": {
+      "type": "forge:ore_dict",
+      "ore": "leather"
+    },
+    "B": {
+      "item": "minecraft:lava_bucket"
+    }
+  },
+  "conditions": [
+    {
+      "type": "item_exists",
+      "item": "hungrypouches:pouch_void"
+    }
+  ]
+}

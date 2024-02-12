@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "hungrypouches:items/holiday/aprilfools/pouch_ore_enabled"
+  }
+}

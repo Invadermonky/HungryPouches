@@ -1,0 +1,15 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "hungrypouches:items/hungering_core_0",
+    "layer1": "hungrypouches:items/hungering_core_1"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "hungrypouches:april_1": 1
+      },
+      "model": "hungrypouches:item/holiday/aprilfools/hungering_core"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "hungrypouches:items/pouch_ore_disabled"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "hungrypouches:enabled": 1
+      },
+      "model": "hungrypouches:item/pouch_ore_enabled"
+    },
+    {
+      "predicate": {
+        "hungrypouches:enabled": 0,
+        "hungrypouches:april_1": 1
+      },
+      "model": "hungrypouches:item/holiday/aprilfools/pouch_ore_disabled"
+    },
+    {
+      "predicate": {
+        "hungrypouches:enabled": 1,
+        "hungrypouches:april_1": 1
+      },
+      "model": "hungrypouches:item/holiday/aprilfools/pouch_ore_enabled"
+    }
+  ]
+}

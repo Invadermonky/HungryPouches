@@ -1,0 +1,16 @@
+[
+{
+  "modid": "hungrypouches",
+  "name": "Hungry Pouches",
+  "description": "Adds a few specialized pouches to the game.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Invadermonky"],
+  "credits": "Authors of this project",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

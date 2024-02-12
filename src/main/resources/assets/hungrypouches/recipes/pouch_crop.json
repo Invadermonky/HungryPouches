@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "hungrypouches:pouch_crop"
+  },
+  "pattern": [
+    "AHP",
+    "BCB",
+    "BBB"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:carrot"
+    },
+    "H": {
+      "item": "hungrypouches:hungering_core"
+    },
+    "P": {
+      "item": "minecraft:potato"
+    },
+    "B": {
+      "type": "forge:ore_dict",
+      "ore": "wool"
+    },
+    "C": {
+      "type": "forge:ore_dict",
+      "ore": "chestWood"
+    }
+  },
+  "conditions": [
+    {
+      "type": "item_exists",
+      "item": "hungrypouches:pouch_crop"
+    }
+  ]
+}

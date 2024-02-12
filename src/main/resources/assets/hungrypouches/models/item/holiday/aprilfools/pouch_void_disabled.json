@@ -1,0 +1,13 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "hungrypouches:items/holiday/aprilfools/pouch_void_disabled"
+  },
+  "display": {
+    "firstperson_righthand": {
+      "rotation": [ 0, -90, 10 ],
+      "translation": [ 1.13, 4.5, 1.13],
+      "scale": [ 0.68, 0.68, 0.68 ]
+    }
+  }
+}

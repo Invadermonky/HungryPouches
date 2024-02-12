@@ -1,0 +1,5 @@
+{
+  "conditions": {
+    "item_exists": "com.invadermonky.hungrypouches.util.factories.ConditionFactoryItemExists"
+  }
+}

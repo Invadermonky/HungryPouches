@@ -1,0 +1,8 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "hungrypouches:items/pouch_mob_enabled",
+    "layer1": "hungrypouches:items/pouch_mob_enabled_drool_1",
+    "layer2": "hungrypouches:items/pouch_mob_enabled_drool_2"
+  }
+}
