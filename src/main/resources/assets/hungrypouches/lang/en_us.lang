@@ -6,7 +6,7 @@ config.hungrypouches:pouch_crop=Crop Pouch
 config.hungrypouches:pouch_mob=Mob Pouch
 config.hungrypouches:pouch_ore=Ore Pouch
 config.hungrypouches:pouch_skeletal=Skeletal Pouch
-config.hungrypouches:pouch_void=Void Pouch (WIP)
+config.hungrypouches:pouch_void=Void Pouch
 
 # Items
 item.hungrypouches:hungering_core.name=Hungering Core
@@ -14,7 +14,7 @@ item.hungrypouches:pouch_crop.name=Herbivorous Pouch
 item.hungrypouches:pouch_mob.name=Carnivorous Pouch
 item.hungrypouches:pouch_ore.name=Saxivorous Pouch
 item.hungrypouches:pouch_void.name=Consuming Pouch
-item.hungrypouches:pouch_skeletal.name=Skeletal Hungry Pouch
+item.hungrypouches:pouch_skeletal.name=Skeletal Pouch
 
 # Enchantments
 enchantment.hungrypouches:gluttonous=Gluttonous

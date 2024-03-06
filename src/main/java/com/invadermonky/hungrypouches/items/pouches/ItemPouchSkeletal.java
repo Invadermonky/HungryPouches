@@ -150,6 +150,7 @@ public class ItemPouchSkeletal extends AbstractPouchHP {
 
         TreeMap<Integer,PouchSlotHandler> contents = PouchHandler.getPouchContents(pouch);
         TreeMap<Integer,PouchSlotHandler> newContents = new TreeMap<>();
+        newContents.putAll(contents);
 
         for(Entry<Integer, PouchSlotHandler> entry : contents.entrySet()) {
             ItemStack pouchStack = entry.getValue().getStack();
