@@ -4,9 +4,11 @@ import com.invadermonky.hungrypouches.handlers.PouchHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
@@ -53,7 +55,6 @@ public class GuiHungryPouch extends GuiCoreHP {
         GlStateManager.popMatrix();
     }
 
-    @Override
     public void drawSlot(Slot slotIn) {
         int i = slotIn.xPos;
         int j = slotIn.yPos;
