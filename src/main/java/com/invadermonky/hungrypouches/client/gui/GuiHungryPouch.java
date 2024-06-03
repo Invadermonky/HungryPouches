@@ -1,18 +1,27 @@
 package com.invadermonky.hungrypouches.client.gui;
 
 import com.invadermonky.hungrypouches.handlers.PouchHandler;
+import com.invadermonky.hungrypouches.inventory.containers.ContainerCoreHP;
+import com.invadermonky.hungrypouches.inventory.containers.ContainerHungryPouch;
+import com.invadermonky.hungrypouches.network.MessageClickWindowHP;
+import com.invadermonky.hungrypouches.network.PacketHandlerHP;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.INetHandler;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class GuiHungryPouch extends GuiCoreHP {
     protected final ResourceLocation texture;
 
@@ -55,6 +64,7 @@ public class GuiHungryPouch extends GuiCoreHP {
         GlStateManager.popMatrix();
     }
 
+    @Override
     public void drawSlot(Slot slotIn) {
         int i = slotIn.xPos;
         int j = slotIn.yPos;
@@ -73,10 +83,10 @@ public class GuiHungryPouch extends GuiCoreHP {
                 return;
             }
 
-            if (Container.canAddItemToSlot(slotIn, itemstack1, true) && this.inventorySlots.canDragIntoSlot(slotIn)) {
+            if (ContainerHungryPouch.canAddItemToSlotHP(slotIn, itemstack1, true) && this.inventorySlots.canDragIntoSlot(slotIn)) {
                 itemstack = itemstack1.copy();
                 flag = true;
-                Container.computeStackSize(this.dragSplittingSlots, this.dragSplittingLimit, itemstack, slotIn.getStack().isEmpty() ? 0 : slotIn.getStack().getCount());
+                ContainerCoreHP.computeStackSizeHP(this.dragSplittingSlots, this.dragSplittingLimit, this.pouch, itemstack, slotIn.getStack().isEmpty() ? 0 : slotIn.getStack().getCount());
                 int k = PouchHandler.getMaxStackSize(this.pouch, itemstack, slotIn);
 
                 if (itemstack.getCount() > k) {
@@ -119,7 +129,6 @@ public class GuiHungryPouch extends GuiCoreHP {
         this.zLevel = 0.0F;
     }
 
-
     private void updateDragSplitting() {
         ItemStack itemstack = this.mc.player.inventory.getItemStack();
 
@@ -133,7 +142,7 @@ public class GuiHungryPouch extends GuiCoreHP {
                     ItemStack itemstack1 = itemstack.copy();
                     ItemStack itemstack2 = slot.getStack();
                     int i = itemstack2.isEmpty() ? 0 : itemstack2.getCount();
-                    Container.computeStackSize(this.dragSplittingSlots, this.dragSplittingLimit, itemstack1, i);
+                    ContainerCoreHP.computeStackSizeHP(this.dragSplittingSlots, this.dragSplittingLimit, this.pouch, itemstack1, i);
                     int j = PouchHandler.getMaxStackSize(this.pouch, itemstack1, slot);
 
                     if (itemstack1.getCount() > j) {
@@ -172,7 +181,7 @@ public class GuiHungryPouch extends GuiCoreHP {
                         this.draggedStack = this.clickedSlot.getStack().copy();
                     }
                 }
-                else if (this.draggedStack.getCount() > 1 && slot != null && Container.canAddItemToSlot(slot, this.draggedStack, false)) {
+                else if (this.draggedStack.getCount() > 1 && slot != null && ContainerHungryPouch.canAddItemToSlotHP(slot, this.draggedStack, false)) {
                     long i = Minecraft.getSystemTime();
 
                     if (this.currentDragTargetSlot == slot) {
@@ -183,17 +192,60 @@ public class GuiHungryPouch extends GuiCoreHP {
                             this.dragItemDropDelay = i + 750L;
                             this.draggedStack.shrink(1);
                         }
-                    }
-                    else {
+                    } else {
                         this.currentDragTargetSlot = slot;
                         this.dragItemDropDelay = i;
                     }
                 }
             }
         }
-        else if (this.dragSplitting && slot != null && !itemstack.isEmpty() && (itemstack.getCount() > this.dragSplittingSlots.size() || this.dragSplittingLimit == 2) && Container.canAddItemToSlot(slot, itemstack, true) && slot.isItemValid(itemstack) && this.inventorySlots.canDragIntoSlot(slot)) {
+        else if (this.dragSplitting && slot != null && !itemstack.isEmpty() && (itemstack.getCount() > this.dragSplittingSlots.size() || this.dragSplittingLimit == 2) && ContainerHungryPouch.canAddItemToSlotHP(slot, itemstack, true) && slot.isItemValid(itemstack) && this.inventorySlots.canDragIntoSlot(slot)) {
             this.dragSplittingSlots.add(slot);
             this.updateDragSplitting();
+        }
+    }
+
+    @Override
+    protected void mouseReleased(int mouseX, int mouseY, int state) {
+        Slot slot = this.getSlotAtPosition(mouseX, mouseY);
+        int k = slot != null ? slot.slotNumber : -1;
+
+        if(this.hasClickedOutside(mouseX, mouseY, this.guiLeft, this.guiTop)) {
+            k = -999;
+        }
+
+        if(this.doubleClick && slot != null && state == 0 && this.inventorySlots.canMergeSlot(ItemStack.EMPTY, slot)) {
+            if(isShiftKeyDown()) {
+                if(!this.shiftClickedSlot.isEmpty()) {
+                    for(Slot slot2 : this.inventorySlots.inventorySlots) {
+                        if(slot2 != null && slot2.canTakeStack(this.mc.player) && slot2.getHasStack() && slot2.isSameInventory(slot) && ContainerHungryPouch.canAddItemToSlotHP(slot2, this.shiftClickedSlot, true)) {
+                            this.handleMouseClick(slot2, slot2.slotNumber, state, ClickType.QUICK_MOVE);
+                        }
+                    }
+                }
+            } else {
+                this.handleMouseClick(slot, k, state, ClickType.PICKUP_ALL);
+            }
+            this.doubleClick = false;
+            this.lastClickTime = 0L;
+        }
+        super.mouseReleased(mouseX, mouseY, state);
+    }
+
+    @Override
+    protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, ClickType type) {
+        slotId = slotIn != null ? slotIn.slotNumber : slotId;
+        EntityPlayer player = this.mc.player;
+        short transactionID = player.openContainer.getNextTransactionID(player.inventory);
+        ItemStack stack = player.openContainer.slotClick(slotId, mouseButton, type, player);
+
+        INetHandler handler = FMLClientHandler.instance().getClientPlayHandler();
+        if(handler instanceof NetHandlerPlayClient) {
+            PacketHandlerHP.instance.sendToServer(new MessageClickWindowHP(this.inventorySlots.windowId, slotId, mouseButton, transactionID, stack, type));
+        } else {
+            if(this.mc.getConnection() != null) {
+                this.mc.getConnection().sendPacket(PacketHandlerHP.instance.getPacketFrom(new MessageClickWindowHP(this.inventorySlots.windowId, slotId, mouseButton, transactionID, stack, type)));
+            }
         }
     }
 }

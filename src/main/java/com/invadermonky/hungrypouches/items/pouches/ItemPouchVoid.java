@@ -60,6 +60,7 @@ public class ItemPouchVoid extends AbstractPouchHP implements IHungryPouch {
     protected void addShiftTooltip(ItemStack stack, List<String> tooltip) {
         tooltip.add(I18n.format(StringHelper.getLanguageKey(Objects.requireNonNull(getRegistryName()).getPath() + ".desc", "tooltip")));
         //TODO: Add tooltip for accepted items.
+        //TODO: Maybe change the GUI to have a filter instead of a configured item pickup.
     }
 
     @Override

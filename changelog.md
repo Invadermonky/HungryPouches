@@ -1,6 +1,9 @@
 #Hungry Pouches Changelog
 
 ## Version 0.0.3
+- Fixed Creative (middle mouse) drag in pouches with Insatiable Enchant
+- Fixed Pickup-All (double-click) in pouches with Insatiable Enchant
+- Fixed GUI items disappearing with stack sizes greater than 127 in multiplayer
 - Fixed several GUI crashes
 - Removed CofhCore dependency
 

@@ -9,8 +9,11 @@ import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Set;
 
 public abstract class ContainerCoreHP extends Container {
     protected final ItemStack pouch;
@@ -187,7 +190,7 @@ public abstract class ContainerCoreHP extends Container {
                 Slot slot7 = this.inventorySlots.get(slotId);
                 ItemStack itemstack12 = inventoryplayer.getItemStack();
 
-                if (slot7 != null && canAddItemToSlot(slot7, itemstack12, true) && slot7.isItemValid(itemstack12) && (this.dragMode == 2 || itemstack12.getCount() > this.dragSlots.size()) && this.canDragIntoSlot(slot7)) {
+                if (slot7 != null && canAddItemToSlotHP(slot7, itemstack12, true) && slot7.isItemValid(itemstack12) && (this.dragMode == 2 || itemstack12.getCount() > this.dragSlots.size()) && this.canDragIntoSlot(slot7)) {
                     this.dragSlots.add(slot7);
                 }
             }
@@ -199,10 +202,10 @@ public abstract class ContainerCoreHP extends Container {
                     for (Slot slot8 : this.dragSlots) {
                         ItemStack itemstack13 = inventoryplayer.getItemStack();
 
-                        if (slot8 != null && canAddItemToSlot(slot8, itemstack13, true) && slot8.isItemValid(itemstack13) && (this.dragMode == 2 || itemstack13.getCount() >= this.dragSlots.size()) && this.canDragIntoSlot(slot8)) {
+                        if (slot8 != null && canAddItemToSlotHP(slot8, itemstack13, true) && slot8.isItemValid(itemstack13) && (this.dragMode == 2 || itemstack13.getCount() >= this.dragSlots.size()) && this.canDragIntoSlot(slot8)) {
                             ItemStack itemstack14 = itemstack9.copy();
                             int j3 = slot8.getHasStack() ? slot8.getStack().getCount() : 0;
-                            computeStackSize(this.dragSlots, this.dragMode, itemstack14, j3);
+                            computeStackSizeHP(this.dragSlots, this.dragMode, this.pouch, itemstack14, j3);
                             int k3 = this.getMaxStackSize(itemstack14, slot8);
 
                             if (itemstack14.getCount() > k3) {
@@ -404,23 +407,25 @@ public abstract class ContainerCoreHP extends Container {
         }
         else if (clickTypeIn == ClickType.PICKUP_ALL && slotId >= 0) {
             Slot slot = this.inventorySlots.get(slotId);
-            ItemStack itemstack1 = inventoryplayer.getItemStack();
+            ItemStack heldStack = inventoryplayer.getItemStack();
 
-            if (!itemstack1.isEmpty() && (slot == null || !slot.getHasStack() || !slot.canTakeStack(player))) {
+            if (!heldStack.isEmpty() && (slot == null || !slot.getHasStack() || !slot.canTakeStack(player))) {
                 int i = dragType == 0 ? 0 : this.inventorySlots.size() - 1;
+                //Loop increment/decrement
                 int j = dragType == 0 ? 1 : -1;
 
+                //Clicked slot stack size limit.
+                int slotLimit = slot == null ? heldStack.getMaxStackSize() : slot.getItemStackLimit(heldStack);
                 for (int k = 0; k < 2; ++k) {
-                    for (int l = i; l >= 0 && l < this.inventorySlots.size() && itemstack1.getCount() < itemstack1.getMaxStackSize(); l += j) {
+                    for (int l = i; l >= 0 && l < this.inventorySlots.size() && heldStack.getCount() < slotLimit; l += j) {
                         Slot slot1 = this.inventorySlots.get(l);
-
-                        if (slot1.getHasStack() && canAddItemToSlot(slot1, itemstack1, true) && slot1.canTakeStack(player) && this.canMergeSlot(itemstack1, slot1)) {
+                        if (slot1.getHasStack() && canAddItemToSlotHP(slot1, heldStack, true) && slot1.canTakeStack(player) && this.canMergeSlot(heldStack, slot1)) {
                             ItemStack itemstack2 = slot1.getStack();
 
-                            if (k != 0 || itemstack2.getCount() != itemstack2.getMaxStackSize()) {
-                                int i1 = Math.min(itemstack1.getMaxStackSize() - itemstack1.getCount(), itemstack2.getCount());
+                            if (k != 0 || itemstack2.getCount() != slot1.getItemStackLimit(itemstack2)) {
+                                int i1 = Math.min(slotLimit - heldStack.getCount(), itemstack2.getCount());
                                 ItemStack itemstack3 = slot1.decrStackSize(i1);
-                                itemstack1.grow(i1);
+                                heldStack.grow(i1);
 
                                 if (itemstack3.isEmpty()) {
                                     slot1.putStack(ItemStack.EMPTY);
@@ -442,5 +447,29 @@ public abstract class ContainerCoreHP extends Container {
     @Override
     public boolean canInteractWith(@Nonnull EntityPlayer playerIn) {
         return true;
+    }
+
+    public static void computeStackSizeHP(Set<Slot> dragSlotsIn, int dragModeIn, ItemStack pouch, ItemStack stack, int slotStackSize) {
+        switch(dragModeIn) {
+            case 0:
+                stack.setCount(MathHelper.floor((float) stack.getCount() / (float) dragSlotsIn.size()));
+                break;
+            case 1:
+                stack.setCount(1);
+                break;
+            case 2:
+                stack.setCount(PouchHandler.getMaxStackSize(pouch, stack));
+                break;
+        }
+        stack.grow(slotStackSize);
+    }
+
+    public static boolean canAddItemToSlotHP(@Nullable Slot slotIn, ItemStack stack, boolean stackSizeMatters) {
+        boolean flag = slotIn == null || !slotIn.getHasStack();
+        if(!flag && stack.isItemEqual(slotIn.getStack()) && ItemStack.areItemStackTagsEqual(slotIn.getStack(), stack)) {
+            return slotIn.getStack().getCount() + (stackSizeMatters ? 0 : stack.getCount()) <= slotIn.getItemStackLimit(stack);
+        } else {
+            return flag;
+        }
     }
 }

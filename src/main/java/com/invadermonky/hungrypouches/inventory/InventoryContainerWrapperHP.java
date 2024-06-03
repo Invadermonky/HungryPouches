@@ -39,7 +39,6 @@ public class InventoryContainerWrapperHP implements IInventory {
     }
 
     protected void loadInventory() {
-        //TODO: This might be buggy
         if(!this.pouchStack.hasTagCompound() || !this.pouchStack.getTagCompound().hasKey(ReferencesHP.TAG_INVENTORY)) {
             if(this.pouchStack.hasTagCompound()) {
                 if(this.pouchStack.getTagCompound().hasKey(ReferencesHP.TAG_INVENTORY)) {
