@@ -1,9 +1,9 @@
 package com.invadermonky.hungrypouches.items;
 
 import com.invadermonky.hungrypouches.HungryPouches;
-import com.invadermonky.hungrypouches.handlers.ConfigHandler;
+import com.invadermonky.hungrypouches.handlers.ConfigHandlerHP;
 import com.invadermonky.hungrypouches.handlers.PouchHandler;
-import com.invadermonky.hungrypouches.handlers.PouchSlotHandler;
+import com.invadermonky.hungrypouches.handlers.StackHandlerPouch;
 import com.invadermonky.hungrypouches.init.EnchantmentRegistryHP;
 import com.invadermonky.hungrypouches.items.pouches.ItemPouchSkeletal;
 import com.invadermonky.hungrypouches.util.NBTHelper;
@@ -51,7 +51,7 @@ public abstract class AbstractPouchHP extends ItemHP {
     }
 
     public int getMaxSlots(ItemStack pouch) {
-        int gluttonyLevel = EnchantmentRegistryHP.enableGluttonousEnchant ? EnchantmentHelper.getEnchantmentLevel(EnchantmentRegistryHP.gluttonous, pouch) : ConfigHandler.HUNGRY_POUCH_ENCHANTS.GLUTTONOUS.pouchFallbackSize;
+        int gluttonyLevel = EnchantmentRegistryHP.enableGluttonousEnchant ? EnchantmentHelper.getEnchantmentLevel(EnchantmentRegistryHP.gluttonous, pouch) : ConfigHandlerHP.HUNGRY_POUCH_ENCHANTS.GLUTTONOUS.pouchFallbackSize;
         switch (gluttonyLevel) {
             case 0: return 9;
             case 1: return 12;
@@ -60,8 +60,12 @@ public abstract class AbstractPouchHP extends ItemHP {
         }
     }
 
+    public int getGuiId() {
+        return ReferencesHP.GUI_ID_POUCH;
+    };
+
     @Override
-    public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack) {
+    public boolean onEntitySwing(@Nonnull EntityLivingBase entityLiving, @Nonnull ItemStack stack) {
         if(entityLiving instanceof EntityPlayer && stack.hasTagCompound() && stack.getTagCompound().hasKey(ReferencesHP.TAG_INVENTORY)) {
             RayTraceResult trace = RayTraceHelper.retrace((EntityPlayer) entityLiving);
             if(trace.typeOfHit == RayTraceResult.Type.MISS) {
@@ -72,7 +76,7 @@ public abstract class AbstractPouchHP extends ItemHP {
     }
 
     @Override
-    public boolean hasEffect(ItemStack stack) {
+    public boolean hasEffect(@Nonnull ItemStack stack) {
         return false;
     }
 
@@ -99,21 +103,21 @@ public abstract class AbstractPouchHP extends ItemHP {
         if(player.isSneaking()) {
             TileEntity tile = player.world.getTileEntity(trace.getBlockPos());
             if(!(tile != null && tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, trace.sideHit))) {
-                if (NBTHelper.getBoolean(stack, ReferencesHP.TAG_ENABLED, false)) {
-                    NBTHelper.setBoolean(stack, ReferencesHP.TAG_ENABLED, false);
+                if (PouchHandler.isEnabled(stack)) {
+                    PouchHandler.setEnabled(stack, false);
                     player.sendStatusMessage(new TextComponentTranslation("chat." + HungryPouches.MOD_ID + ":disabled"), true);
                 } else {
-                    NBTHelper.setBoolean(stack, ReferencesHP.TAG_ENABLED, true);
+                    PouchHandler.setEnabled(stack, true);
                     player.sendStatusMessage(new TextComponentTranslation("chat." + HungryPouches.MOD_ID + ":enabled"), true);
                 }
             }
         } else {
-            if (!player.isCreative() && ConfigHandler.GENERAL_SETTINGS.enableBiting && PouchHandler.isEnabled(stack) && !player.world.getDifficulty().equals(EnumDifficulty.PEACEFUL) && !(stack.getItem() instanceof ItemPouchSkeletal)) {
-                player.attackEntityFrom(DamageSource.GENERIC, ConfigHandler.GENERAL_SETTINGS.biteDamage);
+            if (!player.isCreative() && ConfigHandlerHP.GENERAL_SETTINGS.enableBiting && PouchHandler.isEnabled(stack) && !player.world.getDifficulty().equals(EnumDifficulty.PEACEFUL) && !(stack.getItem() instanceof ItemPouchSkeletal)) {
+                player.attackEntityFrom(DamageSource.GENERIC, ConfigHandlerHP.GENERAL_SETTINGS.biteDamage);
                 player.sendStatusMessage(new TextComponentTranslation("chat." + HungryPouches.MOD_ID + ":biting"), true);
                 player.world.playSound(null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_GENERIC_EAT, SoundCategory.PLAYERS, 1.0f, 1.5f);
             }
-            PouchHandler.openPouchGUI(player, ((stack.getItem() instanceof ItemPouchSkeletal) ? 1 : 0));
+            PouchHandler.openPouchGUI(player, this.getGuiId());
         }
 
         return new ActionResult<>(EnumActionResult.SUCCESS, stack);
@@ -171,7 +175,7 @@ public abstract class AbstractPouchHP extends ItemHP {
      * @param tooltip The List of tooltip strings.
      */
     protected void addNoKeyTooltip(ItemStack stack, List<String> tooltip) {
-        if(ConfigHandler.GENERAL_SETTINGS.enableUsageTooltips) {
+        if(ConfigHandlerHP.GENERAL_SETTINGS.enableUsageTooltips) {
             tooltip.add(I18n.format(StringHelper.getLanguageKey("info", "tooltip")));
             tooltip.add(I18n.format(StringHelper.getLanguageKey("usage", "tooltip")));
         }
@@ -185,16 +189,15 @@ public abstract class AbstractPouchHP extends ItemHP {
     protected void addShiftTooltip(ItemStack stack, List<String> tooltip) {
         tooltip.add(I18n.format(StringHelper.getLanguageKey(Objects.requireNonNull(getRegistryName()).getPath() + ".desc", "tooltip")));
 
-        TreeMap<Integer,PouchSlotHandler> contents = PouchHandler.getPouchContents(stack);
+        TreeMap<Integer, StackHandlerPouch> contents = PouchHandler.getPouchContents(stack);
         if(contents.isEmpty()) {
             tooltip.add(I18n.format(StringHelper.getLanguageKey("empty", "tooltip")));
         } else {
             tooltip.add(I18n.format(StringHelper.getLanguageKey("contents", "tooltip")));
-            for (PouchSlotHandler slotHandler : contents.values()) {
-                tooltip.add("   " + TextFormatting.GOLD + slotHandler.getCount() + TextFormatting.RESET + " " + slotHandler.getStack().getDisplayName());
+            for (StackHandlerPouch stackHandler : contents.values()) {
+                tooltip.add("   " + TextFormatting.GOLD + stackHandler.getCount() + TextFormatting.RESET + " " + stackHandler.getStack().getDisplayName());
             }
         }
-
     }
 
     /**

@@ -1,7 +1,7 @@
 package com.invadermonky.hungrypouches.proxy;
 
 import com.invadermonky.hungrypouches.HungryPouches;
-import com.invadermonky.hungrypouches.client.GuiHandlerHP;
+import com.invadermonky.hungrypouches.client.gui.GuiHandlerHP;
 import com.invadermonky.hungrypouches.events.EventItemPickup;
 import com.invadermonky.hungrypouches.network.PacketHandlerHP;
 import net.minecraftforge.common.MinecraftForge;

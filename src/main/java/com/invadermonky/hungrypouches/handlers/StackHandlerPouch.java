@@ -10,26 +10,33 @@ import java.util.Objects;
  * This implementation is wonky looking but it's a way to bypass the NBT byte primitive size to allow
  * Hungry Pouch slots to support stack sizes greater than 127.
  */
-public class PouchSlotHandler {
+public class StackHandlerPouch {
     private ItemStack stack;
     private int count;
 
-    public PouchSlotHandler(ItemStack stack, int count) {
-        this.stack = stack.copy();
-        this.stack.setCount(1);
-        this.count = count;
+    public StackHandlerPouch(ItemStack stack, int count) {
+        this.setStack(stack, count);
     }
 
-    public PouchSlotHandler(ItemStack stack) {
-        this.stack = stack.copy();
-        this.count = stack.getCount();
-        this.stack.setCount(1);
+    public StackHandlerPouch(ItemStack stack) {
+        this.setStack(stack);
     }
 
     public ItemStack getStack() {
         ItemStack copy = this.stack.copy();
         copy.setCount(this.count);
         return copy;
+    }
+
+    public StackHandlerPouch setStack(ItemStack stack) {
+        return this.setStack(stack, stack.getCount());
+    }
+
+    public StackHandlerPouch setStack(ItemStack stack, int count) {
+        this.stack = stack.copy();
+        this.stack.setCount(1);
+        this.count = count;
+        return this;
     }
 
     public ItemStack getSingleStack() {
@@ -52,7 +59,7 @@ public class PouchSlotHandler {
         this.count = Math.max(0, this.count - amount);
     }
 
-    public NBTTagCompound getInventoryStackNBT() {
+    public NBTTagCompound getInventorySlotNBT() {
         NBTTagCompound slotCompound = new NBTTagCompound();
         NBTTagCompound stackCompound = new NBTTagCompound();
         this.getSingleStack().writeToNBT(stackCompound);
@@ -65,7 +72,7 @@ public class PouchSlotHandler {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PouchSlotHandler that = (PouchSlotHandler) o;
+        StackHandlerPouch that = (StackHandlerPouch) o;
         return ItemStack.areItemsEqual(stack, that.stack) && ItemStack.areItemStackTagsEqual(stack, that.stack);
     }
 

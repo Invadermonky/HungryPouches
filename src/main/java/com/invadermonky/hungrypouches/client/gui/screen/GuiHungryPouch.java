@@ -1,67 +1,38 @@
-package com.invadermonky.hungrypouches.client.gui;
+package com.invadermonky.hungrypouches.client.gui.screen;
 
 import com.invadermonky.hungrypouches.handlers.PouchHandler;
 import com.invadermonky.hungrypouches.inventory.containers.ContainerCoreHP;
 import com.invadermonky.hungrypouches.inventory.containers.ContainerHungryPouch;
 import com.invadermonky.hungrypouches.network.MessageClickWindowHP;
-import com.invadermonky.hungrypouches.network.PacketHandlerHP;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.INetHandler;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
+
 @SideOnly(Side.CLIENT)
 public class GuiHungryPouch extends GuiCoreHP {
-    protected final ResourceLocation texture;
 
-    public GuiHungryPouch(Container inventorySlotsIn, ItemStack pouch) {
-        super(inventorySlotsIn, pouch);
-        this.texture = PouchHandler.getPouchGuiTexture(pouch);
-        this.xSize = 176;
-        this.ySize = 185;
+    public GuiHungryPouch(ContainerHungryPouch inventorySlotsIn) {
+        super(inventorySlotsIn);
     }
 
     @Override
     public void initGui() {
         super.initGui();
-    }
-
-    @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        this.drawDefaultBackground();
-        super.drawScreen(mouseX, mouseY, partialTicks);
-        this.renderHoveredToolTip(mouseX, mouseY);
+        //TODO: Skeletal Pouch return button.
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-    }
-
-    @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        GlStateManager.color(1.0f,1.0f,1.0f,1.0f);
-        this.mc.renderEngine.bindTexture(this.texture);
-        if(this.xSize <= 256 && this.ySize <= 256) {
-            this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
-        } else {
-            this.drawSizedTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize, 512.0F, 512.0F);
-        }
-
-        GlStateManager.pushMatrix();
-        GlStateManager.translate((float) guiLeft, (float) this.guiTop, 0);
-        GlStateManager.popMatrix();
     }
 
     @Override
@@ -233,19 +204,11 @@ public class GuiHungryPouch extends GuiCoreHP {
     }
 
     @Override
-    protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, ClickType type) {
-        slotId = slotIn != null ? slotIn.slotNumber : slotId;
+    protected void handleMouseClick(@Nonnull Slot slotIn, int slotId, int mouseButton, ClickType type) {
+        slotId = slotIn.slotNumber;
         EntityPlayer player = this.mc.player;
         short transactionID = player.openContainer.getNextTransactionID(player.inventory);
         ItemStack stack = player.openContainer.slotClick(slotId, mouseButton, type, player);
-
-        INetHandler handler = FMLClientHandler.instance().getClientPlayHandler();
-        if(handler instanceof NetHandlerPlayClient) {
-            PacketHandlerHP.instance.sendToServer(new MessageClickWindowHP(this.inventorySlots.windowId, slotId, mouseButton, transactionID, stack, type));
-        } else {
-            if(this.mc.getConnection() != null) {
-                this.mc.getConnection().sendPacket(PacketHandlerHP.instance.getPacketFrom(new MessageClickWindowHP(this.inventorySlots.windowId, slotId, mouseButton, transactionID, stack, type)));
-            }
-        }
+        sendMessageToServer(new MessageClickWindowHP(this.inventorySlots.windowId, slotId, mouseButton, transactionID, stack, type));
     }
 }

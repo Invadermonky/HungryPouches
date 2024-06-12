@@ -8,10 +8,7 @@ import com.invadermonky.hungrypouches.items.AbstractPouchHP;
 import com.invadermonky.hungrypouches.items.IHungryPouch;
 import com.invadermonky.hungrypouches.items.pouches.ItemPouchSkeletal;
 import com.invadermonky.hungrypouches.items.pouches.ItemPouchVoid;
-import com.invadermonky.hungrypouches.util.HolidayHelper;
-import com.invadermonky.hungrypouches.util.LogHelper;
-import com.invadermonky.hungrypouches.util.NBTHelper;
-import com.invadermonky.hungrypouches.util.ReferencesHP;
+import com.invadermonky.hungrypouches.util.*;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,7 +16,6 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
@@ -37,6 +33,10 @@ public class PouchHandler {
      */
     public static boolean isEnabled(ItemStack pouch) {
         return NBTHelper.getBoolean(pouch, ReferencesHP.TAG_ENABLED, false);
+    }
+
+    public static void setEnabled(ItemStack pouch, boolean enabled) {
+        NBTHelper.setBoolean(pouch, ReferencesHP.TAG_ENABLED, enabled);
     }
 
     /**
@@ -74,7 +74,7 @@ public class PouchHandler {
         if(!EnchantmentRegistryHP.enableInsatiableEnchant)
             return size;
         int enchLevel = EnchantmentHelper.getEnchantmentLevel(EnchantmentRegistryHP.insatiable, pouch);
-        return ConfigHandler.HUNGRY_POUCH_ENCHANTS.INSATIABLE.exponentialInsatiable ? size * (int) Math.pow(2, enchLevel) : size * (1 + enchLevel);
+        return ConfigHandlerHP.HUNGRY_POUCH_ENCHANTS.INSATIABLE.exponentialInsatiable ? size * (int) Math.pow(2, enchLevel) : size * (1 + enchLevel);
     }
 
     /**
@@ -89,7 +89,7 @@ public class PouchHandler {
         if(size == 1 || !EnchantmentRegistryHP.enableInsatiableEnchant)
             return size;
         int enchLevel = EnchantmentHelper.getEnchantmentLevel(EnchantmentRegistryHP.insatiable, pouch);
-        return ConfigHandler.HUNGRY_POUCH_ENCHANTS.INSATIABLE.exponentialInsatiable ? size * (int) Math.pow(2, enchLevel) : size * (1 + enchLevel);
+        return ConfigHandlerHP.HUNGRY_POUCH_ENCHANTS.INSATIABLE.exponentialInsatiable ? size * (int) Math.pow(2, enchLevel) : size * (1 + enchLevel);
     }
 
     /**
@@ -118,9 +118,9 @@ public class PouchHandler {
     }
 
     /**
+     * Attempts to insert the passed itemstack into the pouch.
      *
-     *
-     * @param player
+     * @param player The player holding the pouch.
      * @param pouch The Hungry Pouch stack being queried
      * @param stack The {@link ItemStack} being inserted.
      * @param isInventoryItem true if the pouch is an item in the player's inventory. This will cause animations and sounds to play.
@@ -134,21 +134,24 @@ public class PouchHandler {
 
         if(isWhitelistedItem(pouch, stack)) {
             if(pouch.getItem() instanceof ItemPouchVoid) {
+                Random rand = new Random();
                 stack.setCount(0);
                 pouch.setAnimationsToGo(5);
-                playPickupSound(player, getPickupSound(pouch));
+                playPickupSound(player, pouch);
+                //Tag modification is used to force the pouch to update animationsToGo
+                NBTHelper.setInt(pouch, ReferencesHP.TAG_RAND, rand.nextInt());
                 return true;
             }
 
             int oldCount = stack.getCount();
-            TreeMap<Integer,PouchSlotHandler> pouchContents = getPouchContents(pouch);
+            TreeMap<Integer, StackHandlerPouch> pouchContents = getPouchContents(pouch);
 
             for(int i = 0; i < getMaxSlots(pouch); i++) {
                 if(!pouchContents.containsKey(i)) {
-                    pouchContents.put(i, new PouchSlotHandler(stack));
+                    pouchContents.put(i, new StackHandlerPouch(stack));
                     stack.setCount(0);
                 } else if(ItemStack.areItemsEqual(pouchContents.get(i).getStack(), stack) && ItemStack.areItemStackTagsEqual(pouchContents.get(i).getStack(), stack)) {
-                    PouchSlotHandler slotHandler = pouchContents.get(i);
+                    StackHandlerPouch slotHandler = pouchContents.get(i);
                     int maxStackSize = getMaxStackSize(pouch, stack);
 
                     if((stack.getCount() + slotHandler.getCount()) <= maxStackSize) {
@@ -168,8 +171,9 @@ public class PouchHandler {
             if(stack.getCount() != oldCount) {
                 if(isInventoryItem) {
                     pouch.setAnimationsToGo(5);
-                    playPickupSound(player, getPickupSound(pouch));
+                    playPickupSound(player, pouch);
                 }
+                //TODO: Pouches not animating when picking up items in multiplayer.
                 setPouchContents(pouch, pouchContents);
             }
             return stack.isEmpty();
@@ -188,20 +192,30 @@ public class PouchHandler {
         if(HolidayHelper.isAprilFools()) {
             return SoundRegistryHP.april_1_pickup;
         } else if(pouch.getItem() instanceof ItemPouchSkeletal) {
-            return ConfigHandler.SKELETAL_POUCH.enableRattlePickup ? SoundEvents.ENTITY_SKELETON_AMBIENT : SoundEvents.ENTITY_ITEM_PICKUP;
+            return ConfigHandlerHP.SKELETAL_POUCH.enableRattlePickup ? SoundEvents.ENTITY_SKELETON_HURT : SoundEvents.ENTITY_ITEM_PICKUP;
+        } else if(pouch.getItem() instanceof ItemPouchVoid) {
+            return ConfigHandlerHP.VOID_POUCH.enableSizzlePickup ? SoundEvents.BLOCK_LAVA_EXTINGUISH : SoundEvents.ENTITY_ITEM_PICKUP;
         } else if (pouch.getItem() instanceof IHungryPouch) {
-            return ConfigHandler.GENERAL_SETTINGS.enableChompPickup ? SoundEvents.ENTITY_GENERIC_EAT : SoundEvents.ENTITY_ITEM_PICKUP;
+            return ConfigHandlerHP.GENERAL_SETTINGS.enableChompPickup ? SoundEvents.ENTITY_GENERIC_EAT : SoundEvents.ENTITY_ITEM_PICKUP;
         }
         return SoundEvents.ENTITY_ITEM_PICKUP;
     }
 
-    public static void playPickupSound(EntityPlayer player, SoundEvent sound) {
+    public static void playPickupSound(EntityPlayer player, ItemStack pouch) {
+        SoundEvent sound = getPickupSound(pouch);
+        Random rand = new Random();
+        float volume = 0.3f;
+        float pitch = (rand.nextFloat() - rand.nextFloat() * 0.7f + 1.0f);
+
         if(sound == SoundRegistryHP.april_1_pickup) {
-            player.world.playSound(null, player.posX, player.posY, player.posZ, sound, SoundCategory.PLAYERS, 0.3f, 1.0f);
-        } else {
-            Random rand = new Random();
-            player.world.playSound(null, player.posX, player.posY, player.posZ, sound, SoundCategory.PLAYERS, 0.3f, (rand.nextFloat() - rand.nextFloat() * 0.7f + 1.0f));
+            pitch = 1.0f;
+        } else if(sound == SoundEvents.ENTITY_SKELETON_HURT) {
+            volume = 0.075f;
+            pitch -= 0.3f;
+        } else if(sound == SoundEvents.BLOCK_LAVA_EXTINGUISH) {
+            pitch -= 0.3f;
         }
+        player.world.playSound(null, player.posX, player.posY, player.posZ, sound, SoundCategory.PLAYERS, volume, pitch);
     }
 
     /**
@@ -232,26 +246,55 @@ public class PouchHandler {
         return false;
     }
 
-    public static TreeMap<Integer, PouchSlotHandler> getPouchContents(ItemStack pouch) {
-        TreeMap<Integer, PouchSlotHandler> pouchContents = new TreeMap<>();
+    /**
+     * Returns a map of the pouch contents using the slot number and the slot handler that holds the item data.
+     */
+    public static TreeMap<Integer, StackHandlerPouch> getPouchContents(ItemStack pouch) {
+        TreeMap<Integer, StackHandlerPouch> pouchContents = new TreeMap<>();
         NBTTagCompound inventoryCompound = NBTHelper.getTagCompound(pouch, ReferencesHP.TAG_INVENTORY);
         for(String slot : inventoryCompound.getKeySet()) {
             int slotIndex = Integer.parseInt(slot);
             NBTTagCompound slotCompound = inventoryCompound.getCompoundTag(slot);
             ItemStack slotStack = new ItemStack(slotCompound.getCompoundTag(ReferencesHP.TAG_ITEM));
             int stackCount = slotCompound.getInteger(ReferencesHP.TAG_COUNT);
-            pouchContents.put(slotIndex, new PouchSlotHandler(slotStack, stackCount));
+            pouchContents.put(slotIndex, new StackHandlerPouch(slotStack, stackCount));
         }
         return pouchContents;
     }
 
-    public static void setPouchContents(ItemStack pouch, TreeMap<Integer,PouchSlotHandler> slotHandlers) {
+    public static void setPouchContents(ItemStack pouch, TreeMap<Integer, StackHandlerPouch> slotHandlers) {
         NBTTagCompound newInventoryCompound = new NBTTagCompound();
 
-        for(Map.Entry<Integer,PouchSlotHandler> slotEntry : slotHandlers.entrySet()) {
+        for(Map.Entry<Integer, StackHandlerPouch> slotEntry : slotHandlers.entrySet()) {
             String slotKey = String.valueOf(slotEntry.getKey());
             if(!slotEntry.getValue().getStack().isEmpty()) {
-                newInventoryCompound.setTag(slotKey, slotEntry.getValue().getInventoryStackNBT());
+                newInventoryCompound.setTag(slotKey, slotEntry.getValue().getInventorySlotNBT());
+            }
+        }
+        NBTTagCompound pouchCompound = pouch.hasTagCompound() ? pouch.getTagCompound() : new NBTTagCompound();
+        pouchCompound.setTag(ReferencesHP.TAG_INVENTORY, newInventoryCompound);
+    }
+
+    public static TreeMap<Integer, StackHandlerFilter> getFilterContents(ItemStack pouch) {
+        TreeMap<Integer, StackHandlerFilter> filterContents = new TreeMap<>();
+        NBTTagCompound inventoryCompound = NBTHelper.getTagCompound(pouch, ReferencesHP.TAG_INVENTORY);
+        for(String slot : inventoryCompound.getKeySet()) {
+            int slotIndex = Integer.parseInt(slot);
+            NBTTagCompound slotCompound = inventoryCompound.getCompoundTag(slot);
+            ItemStack slotStack = new ItemStack(slotCompound.getCompoundTag(ReferencesHP.TAG_ITEM));
+            boolean matchMeta = slotCompound.getBoolean(ReferencesHP.TAG_META);
+            boolean matchOre = slotCompound.getBoolean(ReferencesHP.TAG_ORE);
+            filterContents.put(slotIndex, new StackHandlerFilter(slotStack, matchMeta, matchOre));
+        }
+        return filterContents;
+    }
+
+    public static void setFilterContents(ItemStack pouch, TreeMap<Integer, StackHandlerFilter> filterHandlers) {
+        NBTTagCompound newInventoryCompound = new NBTTagCompound();
+        for(Map.Entry<Integer, StackHandlerFilter> filterEntry : filterHandlers.entrySet()) {
+            String slotKey = String.valueOf(filterEntry.getKey());
+            if(!filterEntry.getValue().getStack().isEmpty()) {
+                newInventoryCompound.setTag(slotKey, filterEntry.getValue().getFilterSlotNBT());
             }
         }
         NBTTagCompound pouchCompound = pouch.hasTagCompound() ? pouch.getTagCompound() : new NBTTagCompound();
@@ -263,16 +306,16 @@ public class PouchHandler {
      * that do not fit in the pouch (this only occurs when enchants are removed or settings are changed).
      */
     public static void shuffleContents(EntityPlayer player, ItemStack pouch) {
-        TreeMap<Integer, PouchSlotHandler> contents = getPouchContents(pouch);
-        TreeMap<Integer, PouchSlotHandler> shuffledContents = new TreeMap<>();
-        List<PouchSlotHandler> allItems = new ArrayList<>();
+        TreeMap<Integer, StackHandlerPouch> contents = getPouchContents(pouch);
+        TreeMap<Integer, StackHandlerPouch> shuffledContents = new TreeMap<>();
+        List<StackHandlerPouch> allItems = new ArrayList<>();
 
         int loopControl = 0;
         while(!contents.isEmpty() && loopControl < 20) {
-            PouchSlotHandler entry =  contents.firstEntry().getValue();
+            StackHandlerPouch entry =  contents.firstEntry().getValue();
 
             if(allItems.contains(entry)) {
-                PouchSlotHandler item = allItems.get(allItems.indexOf(entry));
+                StackHandlerPouch item = allItems.get(allItems.indexOf(entry));
                 item.grow(entry.getCount());
             } else {
                 allItems.add(entry);
@@ -284,7 +327,7 @@ public class PouchHandler {
         int slot = 0;
         while(!allItems.isEmpty()) {
             if(slot < getMaxSlots(pouch)) {
-                PouchSlotHandler slotHandler = allItems.get(0);
+                StackHandlerPouch slotHandler = allItems.get(0);
                 int stackSize = getMaxStackSize(pouch, slotHandler.getStack());
                 if(slotHandler.getCount() <= stackSize) {
                     shuffledContents.put(slot, slotHandler);
@@ -293,7 +336,7 @@ public class PouchHandler {
                 } else {
                     while(slotHandler.getCount() > 0 && slot < getMaxSlots(pouch)) {
                         int count = Math.min(slotHandler.getCount(), stackSize);
-                        shuffledContents.put(slot, new PouchSlotHandler(slotHandler.getStack(), count));
+                        shuffledContents.put(slot, new StackHandlerPouch(slotHandler.getStack(), count));
                         slotHandler.shrink(count);
                         slot++;
                     }
@@ -316,8 +359,8 @@ public class PouchHandler {
         if(target == null)
             return;
 
-        TreeMap<Integer,PouchSlotHandler> contents = getPouchContents(pouch);
-        for(PouchSlotHandler slotHandler : contents.values()) {
+        TreeMap<Integer, StackHandlerPouch> contents = getPouchContents(pouch);
+        for(StackHandlerPouch slotHandler : contents.values()) {
             ItemStack stackCopy = slotHandler.getStack();
 
             if(!stackCopy.isEmpty()) {
@@ -334,13 +377,13 @@ public class PouchHandler {
         setPouchContents(pouch, contents);
     }
 
-    public static void vomitContents(EntityPlayer player, Collection<PouchSlotHandler> vomitItems) {
+    public static void vomitContents(EntityPlayer player, Collection<StackHandlerPouch> vomitItems) {
         Random rand = new Random();
-        if(!vomitItems.isEmpty() && ConfigHandler.GENERAL_SETTINGS.enableVomitSound) {
+        if(!vomitItems.isEmpty() && ConfigHandlerHP.GENERAL_SETTINGS.enableVomitSound) {
             player.world.playSound(null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ZOMBIE_DEATH, SoundCategory.PLAYERS, 0.4f, 0.7f);
         }
 
-        for(PouchSlotHandler itemHandler : vomitItems) {
+        for(StackHandlerPouch itemHandler : vomitItems) {
             int totalCount = itemHandler.getCount();
             int loopControl = 0;
             while (totalCount > 0 && loopControl < 10) {
@@ -362,7 +405,7 @@ public class PouchHandler {
         player.openGui(HungryPouches.INSTANCE, guiId, player.world, 0,0,0);
     }
 
-    public static ResourceLocation getPouchGuiTexture(ItemStack pouch) {
+    public static SpriteResourceLocationHP getPouchGuiTexture(ItemStack pouch) {
         if(pouch.getItem() instanceof ItemPouchVoid) {
             return ReferencesHP.GUI_POUCH_VOID;
         } else if(pouch.getItem() instanceof ItemPouchSkeletal) {

@@ -110,15 +110,14 @@ dependencies {
     implementation rfg.deobf("curse.maven:cofh-core-69162:2920433")
     implementation rfg.deobf("curse.maven:redstone-flux-270789:2920436")
     implementation rfg.deobf("curse.maven:cofh-vanilla-satchels-295043:2715785")
-    implementation rfg.deobf("curse.maven:iron-backpacks-227049:2564573")
     implementation rfg.deobf("curse.maven:nether-chest-268888:2655413")
-    implementation rfg.deobf("curse.maven:forge-backpacks-59143:2554237")
-    compileOnly rfg.deobf("curse.maven:storage-drawers-223852:4655859")
+    //implementation rfg.deobf("curse.maven:forge-backpacks-59143:2554237")
+    //compileOnly rfg.deobf("curse.maven:storage-drawers-223852:4655859")
 
-    implementation rfg.deobf("curse.maven:roots-246183:4460453")
-    implementation rfg.deobf("curse.maven:mystical-world-282940:3460961")
-    implementation rfg.deobf("curse.maven:mysticallib-277064:3483816")
-    implementation rfg.deobf("curse.maven:patchouli-306770:3162874")
+    //implementation rfg.deobf("curse.maven:roots-246183:4460453")
+    //implementation rfg.deobf("curse.maven:mystical-world-282940:3460961")
+    //implementation rfg.deobf("curse.maven:mysticallib-277064:3483816")
+    //implementation rfg.deobf("curse.maven:patchouli-306770:3162874")
 
 
     if (project.use_mixins.toBoolean()) {

@@ -47,7 +47,7 @@ public class NetworkHelper {
             buf.writeShort(-1);
         } else {
             buf.writeShort(Item.getIdFromItem(stack.getItem()));
-            buf.writeShort(stack.getCount());
+            buf.writeInt(stack.getCount());
             buf.writeShort(stack.getMetadata());
             NBTTagCompound tagCompound = null;
             if(stack.getItem().isDamageable() || stack.getItem().getShareTag()) {
@@ -62,7 +62,7 @@ public class NetworkHelper {
             buf.writeShort(-1);
         } else {
             buf.writeShort(Item.getIdFromItem(stack.getItem()));
-            buf.writeShort(stack.getCount());
+            buf.writeInt(stack.getCount());
             buf.writeShort(stack.getMetadata());
             NBTTagCompound tagCompound = null;
             if(stack.getItem().isDamageable() || stack.getItem().getShareTag()) {
@@ -77,7 +77,7 @@ public class NetworkHelper {
         if(itemId < 0) {
             return ItemStack.EMPTY;
         } else {
-            int count = buf.readShort();
+            int count = buf.readInt();
             int meta = buf.readShort();
             ItemStack stack = new ItemStack(Item.getItemById(itemId), count, meta);
             stack.setTagCompound(readNBT(buf));
@@ -90,7 +90,7 @@ public class NetworkHelper {
         if(itemId < 0) {
             return ItemStack.EMPTY;
         } else {
-            int count = buf.readShort();
+            int count = buf.readInt();
             int meta = buf.readShort();
             ItemStack stack = new ItemStack(Item.getItemById(itemId), count, meta);
             stack.setTagCompound(buf.readCompoundTag());

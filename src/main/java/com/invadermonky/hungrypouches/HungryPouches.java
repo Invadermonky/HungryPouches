@@ -1,6 +1,6 @@
 package com.invadermonky.hungrypouches;
 
-import com.invadermonky.hungrypouches.handlers.ConfigHandler;
+import com.invadermonky.hungrypouches.handlers.ConfigHandlerHP;
 import com.invadermonky.hungrypouches.proxy.CommonProxy;
 import com.invadermonky.hungrypouches.util.LogHelper;
 import net.minecraftforge.fml.common.Mod;
@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 public class HungryPouches {
     public static final String MOD_ID = "hungrypouches";
     public static final String MOD_NAME = "Hungry Pouches";
-    public static final String MOD_VERSION = "1.12.2-0.0.3";
+    public static final String MOD_VERSION = "1.12.2-0.0.4";
     public static final String MC_VERSION = "[1.12.2]";
 
     public static final String ProxyClientClass = "com.invadermonky.hungrypouches.proxy.ClientProxy";
@@ -39,7 +39,7 @@ public class HungryPouches {
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        ConfigHandler.ConfigChangeListener.syncConfigValues();
+        ConfigHandlerHP.ConfigChangeListener.syncConfigValues();
         proxy.init(event);
         LogHelper.debug("Finished init phase.");
     }

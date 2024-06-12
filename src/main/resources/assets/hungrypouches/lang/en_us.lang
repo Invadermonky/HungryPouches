@@ -27,6 +27,7 @@ tooltip.hungrypouches:disabled=§8§oSleeping
 tooltip.hungrypouches:slotinfo=%d/%d Slots Used
 tooltip.hungrypouches:empty=Empty
 tooltip.hungrypouches:contents=Contents:
+tooltip.hungrypouches:filter=Filter:
 tooltip.hungrypouches:info=Hold §bSHIFT§7 for info.
 tooltip.hungrypouches:usage=Hold §bCTRL§7 for usage.
 tooltip.hungrypouches:enableinfo=Use while sneaking to Enable/Disable the pouch.

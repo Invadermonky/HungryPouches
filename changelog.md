@@ -1,5 +1,17 @@
 #Hungry Pouches Changelog
 
+## Version 0.0.4
+- Consuming (Void) Pouch now renders lava in GUI slot
+- Consuming (Void) Pouch now makes a sizzle noise when eating items (configurable)
+- Consuming (Void) Pouch now correctly animates when eating items
+- Consuming (Void) Pouch now plays sound when destroying items from inside pouch GUI
+- Increased Skeletal Pouch rattle pickup noise volume
+- Skeletal Pouch GUI now displays a valid pouch icon in each pouch slot
+- Skeletal Pouch GUI now has a button to enable/disable individual nested pouches
+- Fixed Skeletal pouch GUI feed slot misalignment
+- Fixed a dupe bug when pushing items into inventories from nested pouches inside Skeletal Pouch
+
+
 ## Version 0.0.3
 - Fixed Creative (middle mouse) drag in pouches with Insatiable Enchant
 - Fixed Pickup-All (double-click) in pouches with Insatiable Enchant

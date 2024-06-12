@@ -2,6 +2,7 @@ package com.invadermonky.hungrypouches.inventory.containers;
 
 import com.invadermonky.hungrypouches.handlers.PouchHandler;
 import com.invadermonky.hungrypouches.inventory.slots.SlotSkeletalPouch;
+import com.invadermonky.hungrypouches.inventory.wrappers.InventoryContainerWrapperHP;
 import com.invadermonky.hungrypouches.items.AbstractPouchHP;
 import com.invadermonky.hungrypouches.items.pouches.ItemPouchSkeletal;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,15 +15,21 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public class ContainerSkeletalPouch extends ContainerCoreHP {
+    protected final InventoryContainerWrapperHP containerWrapper;
     protected final EntityPlayer player;
-    protected List<Item> enabledPouches;
+    protected List<Item> registeredPouches;
     protected SlotSkeletalPouch feedSlot;
 
     public ContainerSkeletalPouch(ItemStack pouch, InventoryPlayer inventory) {
         super(pouch, inventory);
+        this.containerWrapper = new InventoryContainerWrapperHP(pouch);
         this.player = inventory.player;
-        this.enabledPouches = ItemPouchSkeletal.getEnabledPouches();
+        this.registeredPouches = ItemPouchSkeletal.getRegisteredPouches();
         this.bindPouchInventory();
+    }
+
+    public InventoryContainerWrapperHP getContainerWrapper() {
+        return this.containerWrapper;
     }
 
     @Override
@@ -30,19 +37,28 @@ public class ContainerSkeletalPouch extends ContainerCoreHP {
         //Width 0 - 176
         int xOffset = 8;
         int yOffset = 20;
-        int spacing = (176 - (xOffset * 2) - (this.enabledPouches.size() * 18)) / (this.enabledPouches.size() + 1);
+        int spacing = (176 - (xOffset * 2) - (this.registeredPouches.size() * 18)) / (this.registeredPouches.size() + 1);
         int i;
 
-        for(i = 0; i < enabledPouches.size(); i++) {
-            this.addSlotToContainer(new SlotSkeletalPouch(this.containerWrapper, i, xOffset + (18 * i) + ((spacing + 1) * (i + 1)), yOffset + 31, this.enabledPouches.get(i)));
+        for(i = 0; i < registeredPouches.size(); i++) {
+            this.addSlotToContainer(new SlotSkeletalPouch(this.containerWrapper, i, xOffset + (18 * i) + ((spacing + 1) * (i + 1)), yOffset + 31, this.registeredPouches.get(i)));
         }
-        this.feedSlot = new SlotSkeletalPouch(this.containerWrapper, i, 80, yOffset + 1);
+        this.feedSlot = new SlotSkeletalPouch(this.containerWrapper, i, 79, yOffset + 1);
         this.addSlotToContainer(this.feedSlot);
+    }
+
+    @Override
+    protected boolean performMerge(int slotIndex, ItemStack stack) {
+        int invPlayer = 27;
+        int invFull = invPlayer + 9;
+        int invItem = invFull + this.containerWrapper.getSizeInventory();
+        return slotIndex < invFull ? this.mergeItemStack(stack, invFull, invItem, false) : this.mergeItemStack(stack, 0, invFull, true);
     }
 
     @Override
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
+
         if(this.feedSlot.getHasStack()) {
             ItemStack feedStack = this.feedSlot.getStack();
             int oldCount = feedStack.getCount();
@@ -75,6 +91,7 @@ public class ContainerSkeletalPouch extends ContainerCoreHP {
             }
             feedSlot.putStack(ItemStack.EMPTY);
         }
+
         super.onContainerClosed(playerIn);
     }
 }

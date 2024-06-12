@@ -1,9 +1,11 @@
 package com.invadermonky.hungrypouches.inventory.slots;
 
 import com.invadermonky.hungrypouches.handlers.PouchHandler;
-import com.invadermonky.hungrypouches.inventory.InventoryContainerWrapperHP;
+import com.invadermonky.hungrypouches.inventory.wrappers.InventoryContainerWrapperHP;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+
+import javax.annotation.Nonnull;
 
 public class SlotHungryPouch extends Slot {
     protected final InventoryContainerWrapperHP inventoryWrapper;
@@ -16,7 +18,7 @@ public class SlotHungryPouch extends Slot {
     }
 
     @Override
-    public boolean isItemValid(ItemStack stack) {
+    public boolean isItemValid(@Nonnull ItemStack stack) {
         return PouchHandler.isWhitelistedItem(this.pouch, stack);
     }
 
@@ -26,7 +28,7 @@ public class SlotHungryPouch extends Slot {
     }
 
     @Override
-    public int getItemStackLimit(ItemStack stack) {
+    public int getItemStackLimit(@Nonnull ItemStack stack) {
         return Math.max(PouchHandler.getMaxStackSize(this.pouch, stack), this.getSlotStackLimit());
     }
 }

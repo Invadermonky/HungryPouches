@@ -34,6 +34,14 @@ public class NBTHelper {
         getNBT(stack).setBoolean(tag, bool);
     }
 
+    public static int getInt(ItemStack stack, String tag, int defaultExpected) {
+        return verifyExistence(stack, tag) ? getNBT(stack).getInteger(tag) : defaultExpected;
+    }
+
+    public static void setInt(ItemStack stack, String tag, int value) {
+        getNBT(stack).setInteger(tag, value);
+    }
+
     public static String getString(ItemStack stack, String tag, String defaultExpected) {
         return verifyExistence(stack, tag) ? getNBT(stack).getString(tag) : defaultExpected;
     }

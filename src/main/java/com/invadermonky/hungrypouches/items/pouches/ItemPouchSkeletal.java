@@ -1,13 +1,15 @@
 package com.invadermonky.hungrypouches.items.pouches;
 
-import com.invadermonky.hungrypouches.handlers.ConfigHandler;
+import com.invadermonky.hungrypouches.handlers.ConfigHandlerHP;
 import com.invadermonky.hungrypouches.handlers.PouchHandler;
-import com.invadermonky.hungrypouches.handlers.PouchSlotHandler;
+import com.invadermonky.hungrypouches.handlers.StackHandlerPouch;
 import com.invadermonky.hungrypouches.init.ItemRegistryHP;
 import com.invadermonky.hungrypouches.items.AbstractPouchHP;
 import com.invadermonky.hungrypouches.util.RayTraceHelper;
+import com.invadermonky.hungrypouches.util.ReferencesHP;
 import com.invadermonky.hungrypouches.util.StringHelper;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -39,26 +41,31 @@ public class ItemPouchSkeletal extends AbstractPouchHP {
         super(unlocName);
     }
 
-    public static List<Item> getEnabledPouches() {
+    public static List<Item> getRegisteredPouches() {
         List<Item> pouchList = new ArrayList<>();
-        if(ConfigHandler.CROP_POUCH.enablePouch) {
+        if(ConfigHandlerHP.CROP_POUCH.enablePouch) {
             pouchList.add(ItemRegistryHP.cropPouch);
         }
-        if(ConfigHandler.MOB_POUCH.enablePouch) {
+        if(ConfigHandlerHP.MOB_POUCH.enablePouch) {
             pouchList.add(ItemRegistryHP.mobPouch);
         }
-        if(ConfigHandler.ORE_POUCH.enablePouch) {
+        if(ConfigHandlerHP.ORE_POUCH.enablePouch) {
             pouchList.add(ItemRegistryHP.orePouch);
         }
-        if(ConfigHandler.VOID_POUCH.enablePouch) {
+        if(ConfigHandlerHP.VOID_POUCH.enablePouch) {
             pouchList.add(ItemRegistryHP.voidPouch);
         }
         return pouchList;
     }
 
     @Override
+    public int getGuiId() {
+        return ReferencesHP.GUI_ID_SKELETAL;
+    }
+
+    @Override
     public int getMaxSlots(ItemStack pouch) {
-        return getEnabledPouches().size() + 1;
+        return getRegisteredPouches().size() + 1;
     }
 
     @Override
@@ -67,17 +74,16 @@ public class ItemPouchSkeletal extends AbstractPouchHP {
             EntityPlayer player = (EntityPlayer) entityLiving;
             RayTraceResult trace = RayTraceHelper.retrace(player);
             if(trace.typeOfHit == RayTraceResult.Type.MISS) {
-                TreeMap<Integer,PouchSlotHandler> contents = PouchHandler.getPouchContents(stack);
-                TreeMap<Integer,PouchSlotHandler> newContents = new TreeMap<>();
+                TreeMap<Integer, StackHandlerPouch> contents = PouchHandler.getPouchContents(stack);
 
-                for(Entry<Integer,PouchSlotHandler> entry : contents.entrySet()) {
+                for(Entry<Integer, StackHandlerPouch> entry : contents.entrySet()) {
                     ItemStack slotStack = entry.getValue().getStack();
                     if(!slotStack.isEmpty()) {
                         PouchHandler.shuffleContents(player, slotStack);
-                        newContents.put(entry.getKey(), new PouchSlotHandler(slotStack));
+                        contents.put(entry.getKey(), entry.getValue().setStack(slotStack));
                     }
                 }
-                PouchHandler.setPouchContents(stack, newContents);
+                PouchHandler.setPouchContents(stack, contents);
             }
         }
         return false;
@@ -100,13 +106,19 @@ public class ItemPouchSkeletal extends AbstractPouchHP {
         if(player.isSneaking()) {
             TileEntity tile = world.getTileEntity(pos);
             if(tile != null && tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side)) {
-                ItemStack stack = player.getHeldItem(hand);
+                ItemStack skeletalStack = player.getHeldItem(hand);
                 IItemHandler capability = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side);
-                for(PouchSlotHandler slotHandler : PouchHandler.getPouchContents(stack).values()) {
-                    if(!slotHandler.getStack().isEmpty()) {
-                        PouchHandler.emptyIntoTarget(slotHandler.getStack(), capability);
+
+                TreeMap<Integer, StackHandlerPouch> contents = PouchHandler.getPouchContents(skeletalStack);
+
+                for(Entry<Integer, StackHandlerPouch> entry : contents.entrySet()) {
+                    if(!entry.getValue().getStack().isEmpty()) {
+                        ItemStack pouchStack = entry.getValue().getStack();
+                        PouchHandler.emptyIntoTarget(pouchStack, capability);
+                        contents.put(entry.getKey(), entry.getValue().setStack(pouchStack));
                     }
                 }
+                PouchHandler.setPouchContents(skeletalStack, contents);
             }
         }
         return EnumActionResult.PASS;
@@ -127,17 +139,37 @@ public class ItemPouchSkeletal extends AbstractPouchHP {
     protected void addShiftTooltip(ItemStack stack, List<String> tooltip) {
         tooltip.add(I18n.format(StringHelper.getLanguageKey(Objects.requireNonNull(getRegistryName()).getPath() + ".desc", "tooltip")));
 
-        TreeMap<Integer, PouchSlotHandler> contents = PouchHandler.getPouchContents(stack);
+        TreeMap<Integer, StackHandlerPouch> contents = PouchHandler.getPouchContents(stack);
         if(contents.isEmpty()) {
             tooltip.add(I18n.format(StringHelper.getLanguageKey("empty", "tooltip")));
         } else {
             tooltip.add(I18n.format(StringHelper.getLanguageKey("contents", "tooltip")));
-            for(PouchSlotHandler slotHandler : contents.values()) {
+            for(StackHandlerPouch slotHandler : contents.values()) {
                 ItemStack stackSlot = slotHandler.getStack();
                 String enabled = PouchHandler.isEnabled(stackSlot) ? I18n.format(StringHelper.getLanguageKey("enabled", "tooltip")) : I18n.format(StringHelper.getLanguageKey("disabled", "tooltip"));
                 tooltip.add("   " + TextFormatting.RESET + stackSlot.getDisplayName() + " - " + enabled);
             }
         }
+    }
+
+    @Override
+    public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+        super.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
+
+        /* TODO: Get pouch animation to run in containers. This may be a difficult task as vanilla inventories don't animate stacks.
+        //Ticking nested pouches
+        if(entityIn instanceof EntityPlayer && ((EntityPlayer) entityIn).openContainer instanceof ContainerSkeletalPouch) {
+            EntityPlayer player = (EntityPlayer) entityIn;
+            ContainerSkeletalPouch container = (ContainerSkeletalPouch) player.openContainer;
+
+            for(Slot slot : container.inventorySlots) {
+                ItemStack slotStack = slot.getStack();
+                if(slotStack.getAnimationsToGo() > 0)
+                    slotStack.updateAnimation(worldIn, player, slot.slotNumber, ItemStack.areItemStacksEqual(slotStack, player.activeItemStack));
+            }
+            container.detectAndSendChanges();
+        }
+        */
     }
 
     @Override
@@ -148,14 +180,12 @@ public class ItemPouchSkeletal extends AbstractPouchHP {
         ItemStack eventStack = event.getItem().getItem();
         int oldCount = eventStack.getCount();
 
-        TreeMap<Integer,PouchSlotHandler> contents = PouchHandler.getPouchContents(pouch);
-        TreeMap<Integer,PouchSlotHandler> newContents = new TreeMap<>();
-        newContents.putAll(contents);
+        TreeMap<Integer, StackHandlerPouch> contents = PouchHandler.getPouchContents(pouch);
 
-        for(Entry<Integer, PouchSlotHandler> entry : contents.entrySet()) {
+        for(Entry<Integer, StackHandlerPouch> entry : contents.entrySet()) {
             ItemStack pouchStack = entry.getValue().getStack();
             if(!pouchStack.isEmpty() && PouchHandler.onItemPickup(event, pouchStack, false)) {
-                newContents.put(entry.getKey(), new PouchSlotHandler(pouchStack));
+                contents.put(entry.getKey(), entry.getValue().setStack(pouchStack));
             }
             if(eventStack.isEmpty())
                 break;
@@ -163,8 +193,8 @@ public class ItemPouchSkeletal extends AbstractPouchHP {
 
         if(eventStack.getCount() != oldCount) {
             pouch.setAnimationsToGo(5);
-            PouchHandler.playPickupSound(event.getEntityPlayer(), PouchHandler.getPickupSound(pouch));
-            PouchHandler.setPouchContents(pouch, newContents);
+            PouchHandler.playPickupSound(event.getEntityPlayer(), pouch);
+            PouchHandler.setPouchContents(pouch, contents);
         }
         return eventStack.isEmpty();
     }

@@ -1,30 +1,32 @@
 package com.invadermonky.hungrypouches.inventory.containers;
 
 import com.invadermonky.hungrypouches.handlers.PouchHandler;
-import com.invadermonky.hungrypouches.inventory.InventoryContainerWrapperHP;
 import com.invadermonky.hungrypouches.inventory.slots.SlotLocked;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Set;
 
 public abstract class ContainerCoreHP extends Container {
     protected final ItemStack pouch;
-    protected final InventoryContainerWrapperHP containerWrapper;
-    protected final int pouchIndex;
+    public int pouchSlotId;
 
     public ContainerCoreHP(ItemStack pouch, InventoryPlayer inventory) {
         this.pouch = pouch;
-        this.containerWrapper = new InventoryContainerWrapperHP(pouch);
-        this.pouchIndex = inventory.currentItem;
         this.bindPlayerInventory(inventory);
+    }
+
+    public ItemStack getPouch() {
+        return this.pouch;
     }
 
     protected void bindPlayerInventory(InventoryPlayer inventory) {
@@ -40,6 +42,7 @@ public abstract class ContainerCoreHP extends Container {
         for(int i = 0; i < 9; i++) {
             if(i == inventory.currentItem) {
                 this.addSlotToContainer(new SlotLocked(inventory, i, xOffset + i * 18, yOffset + 58));
+                this.pouchSlotId = this.inventorySlots.size() - 1;
             } else {
                 this.addSlotToContainer(new Slot(inventory, i, xOffset + i * 18, yOffset + 58));
             }
@@ -48,16 +51,7 @@ public abstract class ContainerCoreHP extends Container {
 
     protected abstract void bindPouchInventory();
 
-    protected int getMaxStackSize(ItemStack stack, Slot slot) {
-        return PouchHandler.getMaxStackSize(this.pouch, stack, slot);
-    }
-
-    protected boolean performMerge(int slotIndex, ItemStack stack) {
-        int invPlayer = 27;
-        int invFull = invPlayer + 9;
-        int invItem = invFull + this.containerWrapper.getSizeInventory();
-        return slotIndex < invFull ? this.mergeItemStack(stack, invFull, invItem, false) : this.mergeItemStack(stack, 0, invFull, true);
-    }
+    protected abstract boolean performMerge(int slotIndex, ItemStack stack);
 
     protected ItemStack cloneStack(ItemStack stack, int count) {
         if(stack.isEmpty())
@@ -67,6 +61,10 @@ public abstract class ContainerCoreHP extends Container {
             copy.setCount(count);
             return copy;
         }
+    }
+
+    public List<IContainerListener> getListeners() {
+        return this.listeners;
     }
 
     @Nonnull
@@ -113,8 +111,7 @@ public abstract class ContainerCoreHP extends Container {
                 existingStack = slot.getStack();
                 if (!existingStack.isEmpty()) {
 
-                    maxStack = getMaxStackSize(stack, slot);
-                    this.getMaxStackSize(stack, slot);
+                    maxStack = slot.getItemStackLimit(stack);
                     rmv = Math.min(maxStack, stack.getCount());
 
                     if (slot.isItemValid(cloneStack(stack, rmv)) && existingStack.getItem().equals(stack.getItem()) && (!stack.getHasSubtypes() || stack.getItemDamage() == existingStack.getItemDamage()) && ItemStack.areItemStackTagsEqual(stack, existingStack)) {
@@ -144,7 +141,7 @@ public abstract class ContainerCoreHP extends Container {
                 existingStack = slot.getStack();
                 if (existingStack.isEmpty()) {
 
-                    maxStack = this.getMaxStackSize(stack, slot);
+                    maxStack = slot.getItemStackLimit(stack);
                     rmv = Math.min(maxStack, stack.getCount());
 
                     if (slot.isItemValid(cloneStack(stack, rmv))) {
@@ -206,7 +203,7 @@ public abstract class ContainerCoreHP extends Container {
                             ItemStack itemstack14 = itemstack9.copy();
                             int j3 = slot8.getHasStack() ? slot8.getStack().getCount() : 0;
                             computeStackSizeHP(this.dragSlots, this.dragMode, this.pouch, itemstack14, j3);
-                            int k3 = this.getMaxStackSize(itemstack14, slot8);
+                            int k3 = slot8.getItemStackLimit(itemstack14);
 
                             if (itemstack14.getCount() > k3) {
                                 itemstack14.setCount(k3);
@@ -309,8 +306,8 @@ public abstract class ContainerCoreHP extends Container {
                                     k2 = slot6.getItemStackLimit(itemstack11) - itemstack8.getCount();
                                 }
 
-                                if (k2 > this.getMaxStackSize(itemstack11, slot6) - itemstack8.getCount()) {
-                                    k2 = this.getMaxStackSize(itemstack11, slot6) - itemstack8.getCount();
+                                if(k2 > slot6.getItemStackLimit(itemstack11) - itemstack8.getCount()) {
+                                    k2 = slot6.getItemStackLimit(itemstack11) - itemstack8.getCount();
                                 }
 
                                 itemstack11.shrink(k2);
@@ -392,7 +389,7 @@ public abstract class ContainerCoreHP extends Container {
 
             if (slot3 != null && slot3.getHasStack()) {
                 ItemStack itemstack5 = slot3.getStack().copy();
-                itemstack5.setCount(this.getMaxStackSize(itemstack5, slot3));
+                itemstack5.setCount(slot3.getItemStackLimit(itemstack5));
                 inventoryplayer.setItemStack(itemstack5);
             }
         }

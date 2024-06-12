@@ -1,11 +1,10 @@
-package com.invadermonky.hungrypouches.inventory;
+package com.invadermonky.hungrypouches.inventory.wrappers;
 
 import com.invadermonky.hungrypouches.handlers.PouchHandler;
-import com.invadermonky.hungrypouches.handlers.PouchSlotHandler;
+import com.invadermonky.hungrypouches.handlers.StackHandlerPouch;
 import com.invadermonky.hungrypouches.util.ReferencesHP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.ITextComponent;
@@ -19,7 +18,6 @@ public class InventoryContainerWrapperHP implements IInventory {
     protected final ItemStack pouchStack;
     protected NBTTagCompound tagCompound;
     protected ItemStack[] inventory;
-    protected boolean dirty;
 
     public InventoryContainerWrapperHP(ItemStack pouch) {
         this.pouchStack = pouch;
@@ -27,10 +25,6 @@ public class InventoryContainerWrapperHP implements IInventory {
         Arrays.fill(this.inventory, ItemStack.EMPTY);
         this.loadInventory();
         this.markDirty();
-    }
-
-    public Item getContainerItem() {
-        return this.pouchStack.getItem();
     }
 
     public ItemStack getContainerStack() {
@@ -60,21 +54,14 @@ public class InventoryContainerWrapperHP implements IInventory {
     }
 
     protected void loadStacks() {
-        TreeMap<Integer, PouchSlotHandler> contents = PouchHandler.getPouchContents(pouchStack);
-        for(int i = 0; i < this.inventory.length; i++) {
-            if(!contents.containsKey(i) || contents.get(i).getStack().isEmpty()) {
-                this.inventory[i] = ItemStack.EMPTY;
-            } else {
-                this.inventory[i] = contents.get(i).getStack();
-            }
-        }
+        PouchHandler.getPouchContents(pouchStack).forEach((k,v) -> this.inventory[k] = v.getStack());
     }
 
     protected void saveStacks() {
-        TreeMap<Integer, PouchSlotHandler> contents = new TreeMap<>();
+        TreeMap<Integer, StackHandlerPouch> contents = new TreeMap<>();
         for(int i = 0; i < this.inventory.length; i++) {
             if(!this.inventory[i].isEmpty()) {
-                contents.put(i, new PouchSlotHandler(this.inventory[i]));
+                contents.put(i, new StackHandlerPouch(this.inventory[i]));
             }
         }
         PouchHandler.setPouchContents(this.pouchStack, contents);
@@ -83,13 +70,6 @@ public class InventoryContainerWrapperHP implements IInventory {
     @Override
     public void markDirty() {
         this.saveStacks();
-        this.dirty = true;
-    }
-
-    public boolean getDirty() {
-        boolean r = dirty;
-        this.dirty = false;
-        return r;
     }
 
     @Override
@@ -138,6 +118,7 @@ public class InventoryContainerWrapperHP implements IInventory {
     @Override
     public void setInventorySlotContents(int index, ItemStack stack) {
         this.inventory[index] = stack;
+        this.saveStacks();
     }
 
     @Override

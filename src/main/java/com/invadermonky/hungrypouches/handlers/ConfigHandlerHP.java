@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.oredict.OreDictionary;
 
 @Config(modid = HungryPouches.MOD_ID)
-public class ConfigHandler {
+public class ConfigHandlerHP {
     @LangKey("config." + HungryPouches.MOD_ID + ":enchantments")
     @Comment("Hungry Pouch enchantment configuration.")
     public static final EnchantsConfig HUNGRY_POUCH_ENCHANTS = new EnchantsConfig();
@@ -36,7 +36,7 @@ public class ConfigHandler {
 
     @LangKey("config." + HungryPouches.MOD_ID + ":pouch_void")
     @Comment("Void Hungry Pouch configuration.")
-    public static final PouchConfig VOID_POUCH = new PouchConfig(true, ReferencesHP.VOID_POUCH_ITEMS_DEFAULTS);
+    public static final VoidPouchConfig VOID_POUCH = new VoidPouchConfig(true, ReferencesHP.VOID_POUCH_ITEMS_DEFAULTS);
 
     @LangKey("config." + HungryPouches.MOD_ID + ":pouch_skeletal")
     @Comment("Skeletal Hungry Pouch configuration.")
@@ -114,6 +114,24 @@ public class ConfigHandler {
         }
     }
 
+    public static class VoidPouchConfig {
+        @RequiresMcRestart
+        @Comment("Enables this specific Hungry Pouch.")
+        public boolean enablePouch;
+
+        @Comment("Replaces the default pickup noise with a lava sizzle/extinguish sound whenever the Void Pouch consumes an item.")
+        public boolean enableSizzlePickup = true;
+
+        @LangKey("config." + HungryPouches.MOD_ID + ":item_whitelist")
+        @Comment("List of items the activated Hungry Pouch will attempt to eat.\nExamples:\n  ore=ingotIron\n  type=ingot\n  item=minecraft:iron_ingot\n  item=minecraft:iron_ingot:0")
+        public String[] itemWhitelist;
+
+        public VoidPouchConfig(boolean enablePouch, String[] itemWhitelist) {
+            this.enablePouch = enablePouch;
+            this.itemWhitelist = itemWhitelist;
+        }
+    }
+
     public static class SkeletalPouchConfig {
         @RequiresMcRestart
         @Comment("Enables the Skeletal Hungry Pouch. This pouch stores one of each Hungry Pouch and will mimic their auto-eat functionality.")
@@ -140,27 +158,27 @@ public class ConfigHandler {
 
             //Crop Pouch
             ItemPouchCrop.clearWhitelists();
-            ItemPouchCrop.itemWhitelist.addAll(getStringsFromArray(ConfigHandler.CROP_POUCH.itemWhitelist, ITEM));
-            ItemPouchCrop.oreWhitelist.addAll(getOreIdsFromArray(ConfigHandler.CROP_POUCH.itemWhitelist, ORE));
-            ItemPouchCrop.oreWhitelist.addAll(getOreIdsFromArray(ConfigHandler.CROP_POUCH.itemWhitelist, TYPE));
+            ItemPouchCrop.itemWhitelist.addAll(getStringsFromArray(ConfigHandlerHP.CROP_POUCH.itemWhitelist, ITEM));
+            ItemPouchCrop.oreWhitelist.addAll(getOreIdsFromArray(ConfigHandlerHP.CROP_POUCH.itemWhitelist, ORE));
+            ItemPouchCrop.oreWhitelist.addAll(getOreIdsFromArray(ConfigHandlerHP.CROP_POUCH.itemWhitelist, TYPE));
 
             //Mob Pouch
             ItemPouchMob.clearWhitelists();
-            ItemPouchMob.itemWhitelist.addAll(getStringsFromArray(ConfigHandler.MOB_POUCH.itemWhitelist, ITEM));
-            ItemPouchMob.oreWhitelist.addAll(getOreIdsFromArray(ConfigHandler.MOB_POUCH.itemWhitelist, ORE));
-            ItemPouchMob.oreWhitelist.addAll(getOreIdsFromArray(ConfigHandler.MOB_POUCH.itemWhitelist, TYPE));
+            ItemPouchMob.itemWhitelist.addAll(getStringsFromArray(ConfigHandlerHP.MOB_POUCH.itemWhitelist, ITEM));
+            ItemPouchMob.oreWhitelist.addAll(getOreIdsFromArray(ConfigHandlerHP.MOB_POUCH.itemWhitelist, ORE));
+            ItemPouchMob.oreWhitelist.addAll(getOreIdsFromArray(ConfigHandlerHP.MOB_POUCH.itemWhitelist, TYPE));
 
             //Ore Pouch
             ItemPouchOre.clearWhitelists();
-            ItemPouchOre.itemWhitelist.addAll(getStringsFromArray(ConfigHandler.ORE_POUCH.itemWhitelist, ITEM));
-            ItemPouchOre.oreWhitelist.addAll(getOreIdsFromArray(ConfigHandler.ORE_POUCH.itemWhitelist, ORE));
-            ItemPouchOre.oreWhitelist.addAll(getOreIdsFromArray(ConfigHandler.ORE_POUCH.itemWhitelist, TYPE));
+            ItemPouchOre.itemWhitelist.addAll(getStringsFromArray(ConfigHandlerHP.ORE_POUCH.itemWhitelist, ITEM));
+            ItemPouchOre.oreWhitelist.addAll(getOreIdsFromArray(ConfigHandlerHP.ORE_POUCH.itemWhitelist, ORE));
+            ItemPouchOre.oreWhitelist.addAll(getOreIdsFromArray(ConfigHandlerHP.ORE_POUCH.itemWhitelist, TYPE));
 
             //Void Pouch
             ItemPouchVoid.clearWhitelists();
-            ItemPouchVoid.itemWhitelist.addAll(getStringsFromArray(ConfigHandler.VOID_POUCH.itemWhitelist, ITEM));
-            ItemPouchVoid.oreWhitelist.addAll(getOreIdsFromArray(ConfigHandler.VOID_POUCH.itemWhitelist, ORE));
-            ItemPouchVoid.oreWhitelist.addAll(getOreIdsFromArray(ConfigHandler.VOID_POUCH.itemWhitelist, TYPE));
+            ItemPouchVoid.itemWhitelist.addAll(getStringsFromArray(ConfigHandlerHP.VOID_POUCH.itemWhitelist, ITEM));
+            ItemPouchVoid.oreWhitelist.addAll(getOreIdsFromArray(ConfigHandlerHP.VOID_POUCH.itemWhitelist, ORE));
+            ItemPouchVoid.oreWhitelist.addAll(getOreIdsFromArray(ConfigHandlerHP.VOID_POUCH.itemWhitelist, TYPE));
         }
 
         private static THashSet<String> getStringsFromArray(String[] array, String regexType) {
