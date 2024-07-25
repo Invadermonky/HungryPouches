@@ -118,6 +118,8 @@ dependencies {
     //implementation rfg.deobf("curse.maven:mystical-world-282940:3460961")
     //implementation rfg.deobf("curse.maven:mysticallib-277064:3483816")
     //implementation rfg.deobf("curse.maven:patchouli-306770:3162874")
+    //implementation rfg.deobf("curse.maven:guide-api-228832:2645992")
+    //implementation rfg.deobf("curse.maven:blood-magic-224791:2822288")
 
 
     if (project.use_mixins.toBoolean()) {

@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 public class HungryPouches {
     public static final String MOD_ID = "hungrypouches";
     public static final String MOD_NAME = "Hungry Pouches";
-    public static final String MOD_VERSION = "1.12.2-0.0.4";
+    public static final String MOD_VERSION = "1.12.2-0.0.5";
     public static final String MC_VERSION = "[1.12.2]";
 
     public static final String ProxyClientClass = "com.invadermonky.hungrypouches.proxy.ClientProxy";

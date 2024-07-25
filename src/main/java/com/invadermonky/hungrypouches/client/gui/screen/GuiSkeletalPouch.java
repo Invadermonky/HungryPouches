@@ -29,7 +29,8 @@ public class GuiSkeletalPouch extends GuiCoreHP {
             if(slot instanceof SlotSkeletalPouch && ((SlotSkeletalPouch) slot).isPouchSlot()) {
                 int xOffset = this.guiLeft + slot.xPos + 17;
                 int yOffset = this.guiTop + slot.yPos - 1;
-                this.addButton(new GuiButtonPouchHP((SlotSkeletalPouch) slot, ReferencesHP.SPRITE_BUTTON_ENABLE, i++, xOffset, yOffset));
+                //TODO: Change passed sprite to correct overlay.
+                this.addButton(new GuiButtonPouchHP((SlotSkeletalPouch) slot, ReferencesHP.SPRITE_BUTTON, i++, xOffset, yOffset));
                 //TODO: Open Pouch button
                 // this.addButton(new GuiButton(i++, xOffset, yOffset + 10, 8, 8, ""));
             }
