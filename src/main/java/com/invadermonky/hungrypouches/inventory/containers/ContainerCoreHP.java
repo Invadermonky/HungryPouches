@@ -111,7 +111,7 @@ public abstract class ContainerCoreHP extends Container {
                 existingStack = slot.getStack();
                 if (!existingStack.isEmpty()) {
 
-                    maxStack = slot.getItemStackLimit(stack);
+                    maxStack = PouchHandler.getMaxStackSize(this.pouch, stack, slot);
                     rmv = Math.min(maxStack, stack.getCount());
 
                     if (slot.isItemValid(cloneStack(stack, rmv)) && existingStack.getItem().equals(stack.getItem()) && (!stack.getHasSubtypes() || stack.getItemDamage() == existingStack.getItemDamage()) && ItemStack.areItemStackTagsEqual(stack, existingStack)) {
@@ -141,7 +141,7 @@ public abstract class ContainerCoreHP extends Container {
                 existingStack = slot.getStack();
                 if (existingStack.isEmpty()) {
 
-                    maxStack = slot.getItemStackLimit(stack);
+                    maxStack = PouchHandler.getMaxStackSize(this.pouch, stack, slot);
                     rmv = Math.min(maxStack, stack.getCount());
 
                     if (slot.isItemValid(cloneStack(stack, rmv))) {
@@ -203,7 +203,7 @@ public abstract class ContainerCoreHP extends Container {
                             ItemStack itemstack14 = itemstack9.copy();
                             int j3 = slot8.getHasStack() ? slot8.getStack().getCount() : 0;
                             computeStackSizeHP(this.dragSlots, this.dragMode, this.pouch, itemstack14, j3);
-                            int k3 = slot8.getItemStackLimit(itemstack14);
+                            int k3 = PouchHandler.getMaxStackSize(this.pouch, itemstack14, slot8);
 
                             if (itemstack14.getCount() > k3) {
                                 itemstack14.setCount(k3);
@@ -313,7 +313,7 @@ public abstract class ContainerCoreHP extends Container {
                                 itemstack11.shrink(k2);
                                 itemstack8.grow(k2);
                             }
-                            else if (itemstack11.getCount() <= slot6.getItemStackLimit(itemstack11)) {
+                            else if (itemstack11.getCount() <= PouchHandler.getMaxStackSize(this.pouch, itemstack11, slot6)) {
                                 slot6.putStack(itemstack11);
                                 inventoryplayer.setItemStack(itemstack8);
                             }
@@ -354,7 +354,7 @@ public abstract class ContainerCoreHP extends Container {
                 }
                 else if (itemstack10.isEmpty()) {
                     if (slot4.isItemValid(itemstack6)) {
-                        int l1 = slot4.getItemStackLimit(itemstack6);
+                        int l1 = PouchHandler.getMaxStackSize(this.pouch, itemstack6, slot4);
 
                         if (itemstack6.getCount() > l1) {
                             slot4.putStack(itemstack6.splitStack(l1));
@@ -366,7 +366,7 @@ public abstract class ContainerCoreHP extends Container {
                     }
                 }
                 else if (slot4.canTakeStack(player) && slot4.isItemValid(itemstack6)) {
-                    int i2 = slot4.getItemStackLimit(itemstack6);
+                    int i2 = PouchHandler.getMaxStackSize(this.pouch, itemstack6, slot4);
 
                     if (itemstack6.getCount() > i2) {
                         slot4.putStack(itemstack6.splitStack(i2));
@@ -412,14 +412,14 @@ public abstract class ContainerCoreHP extends Container {
                 int j = dragType == 0 ? 1 : -1;
 
                 //Clicked slot stack size limit.
-                int slotLimit = slot == null ? heldStack.getMaxStackSize() : slot.getItemStackLimit(heldStack);
+                int slotLimit = slot == null ? heldStack.getMaxStackSize() : PouchHandler.getMaxStackSize(this.pouch, heldStack, slot);
                 for (int k = 0; k < 2; ++k) {
                     for (int l = i; l >= 0 && l < this.inventorySlots.size() && heldStack.getCount() < slotLimit; l += j) {
                         Slot slot1 = this.inventorySlots.get(l);
                         if (slot1.getHasStack() && canAddItemToSlotHP(slot1, this.pouch, heldStack, true) && slot1.canTakeStack(player) && this.canMergeSlot(heldStack, slot1)) {
                             ItemStack itemstack2 = slot1.getStack();
 
-                            if (k != 0 || itemstack2.getCount() != slot1.getItemStackLimit(itemstack2)) {
+                            if (k != 0 || itemstack2.getCount() != PouchHandler.getMaxStackSize(this.pouch, itemstack2, slot1)) {
                                 int i1 = Math.min(slotLimit - heldStack.getCount(), itemstack2.getCount());
                                 ItemStack itemstack3 = slot1.decrStackSize(i1);
                                 heldStack.grow(i1);
