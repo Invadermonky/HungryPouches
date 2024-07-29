@@ -187,7 +187,7 @@ public abstract class ContainerCoreHP extends Container {
                 Slot slot7 = this.inventorySlots.get(slotId);
                 ItemStack itemstack12 = inventoryplayer.getItemStack();
 
-                if (slot7 != null && canAddItemToSlotHP(slot7, itemstack12, true) && slot7.isItemValid(itemstack12) && (this.dragMode == 2 || itemstack12.getCount() > this.dragSlots.size()) && this.canDragIntoSlot(slot7)) {
+                if (slot7 != null && canAddItemToSlotHP(slot7, this.pouch, itemstack12, true) && slot7.isItemValid(itemstack12) && (this.dragMode == 2 || itemstack12.getCount() > this.dragSlots.size()) && this.canDragIntoSlot(slot7)) {
                     this.dragSlots.add(slot7);
                 }
             }
@@ -199,7 +199,7 @@ public abstract class ContainerCoreHP extends Container {
                     for (Slot slot8 : this.dragSlots) {
                         ItemStack itemstack13 = inventoryplayer.getItemStack();
 
-                        if (slot8 != null && canAddItemToSlotHP(slot8, itemstack13, true) && slot8.isItemValid(itemstack13) && (this.dragMode == 2 || itemstack13.getCount() >= this.dragSlots.size()) && this.canDragIntoSlot(slot8)) {
+                        if (slot8 != null && canAddItemToSlotHP(slot8, this.pouch, itemstack13, true) && slot8.isItemValid(itemstack13) && (this.dragMode == 2 || itemstack13.getCount() >= this.dragSlots.size()) && this.canDragIntoSlot(slot8)) {
                             ItemStack itemstack14 = itemstack9.copy();
                             int j3 = slot8.getHasStack() ? slot8.getStack().getCount() : 0;
                             computeStackSizeHP(this.dragSlots, this.dragMode, this.pouch, itemstack14, j3);
@@ -274,8 +274,8 @@ public abstract class ContainerCoreHP extends Container {
                         if (!itemstack11.isEmpty() && slot6.isItemValid(itemstack11)) {
                             int i3 = dragType == 0 ? itemstack11.getCount() : 1;
 
-                            if (i3 > slot6.getItemStackLimit(itemstack11)) {
-                                i3 = slot6.getItemStackLimit(itemstack11);
+                            if (i3 > PouchHandler.getMaxStackSize(this.pouch, itemstack11, slot6)) {
+                                i3 = PouchHandler.getMaxStackSize(this.pouch, itemstack11, slot6);
                             }
 
                             slot6.putStack(itemstack11.splitStack(i3));
@@ -302,12 +302,12 @@ public abstract class ContainerCoreHP extends Container {
                             if (itemstack8.getItem() == itemstack11.getItem() && itemstack8.getMetadata() == itemstack11.getMetadata() && ItemStack.areItemStackTagsEqual(itemstack8, itemstack11)) {
                                 int k2 = dragType == 0 ? itemstack11.getCount() : 1;
 
-                                if (k2 > slot6.getItemStackLimit(itemstack11) - itemstack8.getCount()) {
-                                    k2 = slot6.getItemStackLimit(itemstack11) - itemstack8.getCount();
+                                if (k2 > PouchHandler.getMaxStackSize(this.pouch, itemstack11, slot6) - itemstack8.getCount()) {
+                                    k2 = PouchHandler.getMaxStackSize(this.pouch, itemstack11, slot6) - itemstack8.getCount();
                                 }
 
-                                if(k2 > slot6.getItemStackLimit(itemstack11) - itemstack8.getCount()) {
-                                    k2 = slot6.getItemStackLimit(itemstack11) - itemstack8.getCount();
+                                if(k2 > PouchHandler.getMaxStackSize(this.pouch, itemstack11) - itemstack8.getCount()) {
+                                    k2 = PouchHandler.getMaxStackSize(this.pouch, itemstack11) - itemstack8.getCount();
                                 }
 
                                 itemstack11.shrink(k2);
@@ -389,7 +389,7 @@ public abstract class ContainerCoreHP extends Container {
 
             if (slot3 != null && slot3.getHasStack()) {
                 ItemStack itemstack5 = slot3.getStack().copy();
-                itemstack5.setCount(slot3.getItemStackLimit(itemstack5));
+                itemstack5.setCount(PouchHandler.getMaxStackSize(this.pouch, itemstack5, slot3));
                 inventoryplayer.setItemStack(itemstack5);
             }
         }
@@ -416,7 +416,7 @@ public abstract class ContainerCoreHP extends Container {
                 for (int k = 0; k < 2; ++k) {
                     for (int l = i; l >= 0 && l < this.inventorySlots.size() && heldStack.getCount() < slotLimit; l += j) {
                         Slot slot1 = this.inventorySlots.get(l);
-                        if (slot1.getHasStack() && canAddItemToSlotHP(slot1, heldStack, true) && slot1.canTakeStack(player) && this.canMergeSlot(heldStack, slot1)) {
+                        if (slot1.getHasStack() && canAddItemToSlotHP(slot1, this.pouch, heldStack, true) && slot1.canTakeStack(player) && this.canMergeSlot(heldStack, slot1)) {
                             ItemStack itemstack2 = slot1.getStack();
 
                             if (k != 0 || itemstack2.getCount() != slot1.getItemStackLimit(itemstack2)) {
@@ -461,10 +461,10 @@ public abstract class ContainerCoreHP extends Container {
         stack.grow(slotStackSize);
     }
 
-    public static boolean canAddItemToSlotHP(@Nullable Slot slotIn, ItemStack stack, boolean stackSizeMatters) {
+    public static boolean canAddItemToSlotHP(@Nullable Slot slotIn, ItemStack pouch, ItemStack stack, boolean stackSizeMatters) {
         boolean flag = slotIn == null || !slotIn.getHasStack();
         if(!flag && stack.isItemEqual(slotIn.getStack()) && ItemStack.areItemStackTagsEqual(slotIn.getStack(), stack)) {
-            return slotIn.getStack().getCount() + (stackSizeMatters ? 0 : stack.getCount()) <= slotIn.getItemStackLimit(stack);
+            return slotIn.getStack().getCount() + (stackSizeMatters ? stack.getCount() : 0) <= PouchHandler.getMaxStackSize(pouch, stack, slotIn);
         } else {
             return flag;
         }
