@@ -4,7 +4,6 @@ import com.invadermonky.hungrypouches.HungryPouches;
 import com.invadermonky.hungrypouches.items.pouches.ItemPouchCrop;
 import com.invadermonky.hungrypouches.items.pouches.ItemPouchMob;
 import com.invadermonky.hungrypouches.items.pouches.ItemPouchOre;
-import com.invadermonky.hungrypouches.items.pouches.ItemPouchVoid;
 import com.invadermonky.hungrypouches.util.ReferencesHP;
 import gnu.trove.set.hash.THashSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -18,31 +17,31 @@ import net.minecraftforge.oredict.OreDictionary;
 
 @Config(modid = HungryPouches.MOD_ID)
 public class ConfigHandlerHP {
-    @LangKey("config." + HungryPouches.MOD_ID + ":enchantments")
+    @LangKey("config." + HungryPouches.MOD_ID + ".enchantments")
     @Comment("Hungry Pouch enchantment configuration.")
     public static final EnchantsConfig HUNGRY_POUCH_ENCHANTS = new EnchantsConfig();
 
-    @LangKey("config." + HungryPouches.MOD_ID + ":pouch_crop")
+    @LangKey("config." + HungryPouches.MOD_ID + ".pouch_crop")
     @Comment("Crop Hungry Pouch configuration.")
     public static final PouchConfig CROP_POUCH = new PouchConfig(true, ReferencesHP.CROP_POUCH_ITEMS_DEFAULTS);
 
-    @LangKey("config." + HungryPouches.MOD_ID + ":pouch_mob")
+    @LangKey("config." + HungryPouches.MOD_ID + ".pouch_mob")
     @Comment("Mob Hungry Pouch configuration.")
     public static final PouchConfig MOB_POUCH = new PouchConfig(true, ReferencesHP.MOB_POUCH_ITEMS_DEFAULTS);
 
-    @LangKey("config." + HungryPouches.MOD_ID + ":pouch_ore")
+    @LangKey("config." + HungryPouches.MOD_ID + ".pouch_ore")
     @Comment("Ore Hungry Pouch configuration.")
     public static final PouchConfig ORE_POUCH = new PouchConfig(true, ReferencesHP.ORE_POUCH_ITEMS_DEFAULTS);
 
-    @LangKey("config." + HungryPouches.MOD_ID + ":pouch_void")
+    @LangKey("config." + HungryPouches.MOD_ID + ".pouch_void")
     @Comment("Void Hungry Pouch configuration.")
-    public static final VoidPouchConfig VOID_POUCH = new VoidPouchConfig(true, ReferencesHP.VOID_POUCH_ITEMS_DEFAULTS);
+    public static final VoidPouchConfig VOID_POUCH = new VoidPouchConfig(true);
 
-    @LangKey("config." + HungryPouches.MOD_ID + ":pouch_skeletal")
+    @LangKey("config." + HungryPouches.MOD_ID + ".pouch_skeletal")
     @Comment("Skeletal Hungry Pouch configuration.")
     public static final SkeletalPouchConfig SKELETAL_POUCH = new SkeletalPouchConfig();
 
-    @LangKey("config." + HungryPouches.MOD_ID + ":general")
+    @LangKey("config." + HungryPouches.MOD_ID + ".general")
     @Comment("General Hungry Pouch settings.")
     public static final Settings GENERAL_SETTINGS = new Settings();
 
@@ -64,11 +63,11 @@ public class ConfigHandlerHP {
     }
 
     public static class EnchantsConfig {
-        @LangKey("enchantment." + HungryPouches.MOD_ID + ":gluttonous")
+        @LangKey("enchantment." + HungryPouches.MOD_ID + ".gluttonous")
         @Comment("Skeletal Hungry Pouch configuration.")
         public GluttonousConfig GLUTTONOUS = new GluttonousConfig();
 
-        @LangKey("enchantment." + HungryPouches.MOD_ID + ":insatiable")
+        @LangKey("enchantment." + HungryPouches.MOD_ID + ".insatiable")
         @Comment("Skeletal Hungry Pouch configuration.")
         public InsatiableConfig INSATIABLE = new InsatiableConfig();
 
@@ -104,7 +103,7 @@ public class ConfigHandlerHP {
         @Comment("Enables this specific Hungry Pouch.")
         public boolean enablePouch;
 
-        @LangKey("config." + HungryPouches.MOD_ID + ":item_whitelist")
+        @LangKey("config." + HungryPouches.MOD_ID + ".item_whitelist")
         @Comment("List of items the activated Hungry Pouch will attempt to eat.\nExamples:\n  ore=ingotIron\n  type=ingot\n  item=minecraft:iron_ingot\n  item=minecraft:iron_ingot:0")
         public String[] itemWhitelist;
 
@@ -122,13 +121,8 @@ public class ConfigHandlerHP {
         @Comment("Replaces the default pickup noise with a lava sizzle/extinguish sound whenever the Void Pouch consumes an item.")
         public boolean enableSizzlePickup = true;
 
-        @LangKey("config." + HungryPouches.MOD_ID + ":item_whitelist")
-        @Comment("List of items the activated Hungry Pouch will attempt to eat.\nExamples:\n  ore=ingotIron\n  type=ingot\n  item=minecraft:iron_ingot\n  item=minecraft:iron_ingot:0")
-        public String[] itemWhitelist;
-
-        public VoidPouchConfig(boolean enablePouch, String[] itemWhitelist) {
+        public VoidPouchConfig(boolean enablePouch) {
             this.enablePouch = enablePouch;
-            this.itemWhitelist = itemWhitelist;
         }
     }
 
@@ -173,12 +167,6 @@ public class ConfigHandlerHP {
             ItemPouchOre.itemWhitelist.addAll(getStringsFromArray(ConfigHandlerHP.ORE_POUCH.itemWhitelist, ITEM));
             ItemPouchOre.oreWhitelist.addAll(getOreIdsFromArray(ConfigHandlerHP.ORE_POUCH.itemWhitelist, ORE));
             ItemPouchOre.oreWhitelist.addAll(getOreIdsFromArray(ConfigHandlerHP.ORE_POUCH.itemWhitelist, TYPE));
-
-            //Void Pouch
-            ItemPouchVoid.clearWhitelists();
-            ItemPouchVoid.itemWhitelist.addAll(getStringsFromArray(ConfigHandlerHP.VOID_POUCH.itemWhitelist, ITEM));
-            ItemPouchVoid.oreWhitelist.addAll(getOreIdsFromArray(ConfigHandlerHP.VOID_POUCH.itemWhitelist, ORE));
-            ItemPouchVoid.oreWhitelist.addAll(getOreIdsFromArray(ConfigHandlerHP.VOID_POUCH.itemWhitelist, TYPE));
         }
 
         private static THashSet<String> getStringsFromArray(String[] array, String regexType) {

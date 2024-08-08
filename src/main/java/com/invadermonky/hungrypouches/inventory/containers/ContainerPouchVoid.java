@@ -13,28 +13,30 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
-public class ContainerVoidPouch extends ContainerCoreHP {
+public class ContainerPouchVoid extends ContainerCoreHP {
     protected final FilterContainerWrapperHP containerWrapper;
     protected EntityPlayer player;
 
-    public ContainerVoidPouch(ItemStack pouch, InventoryPlayer inventory, EntityPlayer player) {
+    public ContainerPouchVoid(ItemStack pouch, InventoryPlayer inventory, EntityPlayer player) {
         super(pouch, inventory);
         this.containerWrapper = new FilterContainerWrapperHP(pouch);
         this.player = player;
         this.bindPouchInventory();
     }
 
+    public FilterContainerWrapperHP getContainerWrapper() {
+        return this.containerWrapper;
+    }
+
     @Override
     protected void bindPouchInventory() {
         int xOffset = 80;
-        int yOffset = 36;
+        int yOffset = 56;
         this.addSlotToContainer(new SlotVoid(this.containerWrapper, 0, xOffset, yOffset));
 
         //Slot index 0 is the trash slot
         for(int i = 1; i < this.containerWrapper.getSizeInventory(); i++) {
-            //TODO: Add filter slots
-            //this.addSlotToContainer(new SlotFilter(this.containerWrapper, i, TODO x, TODO y));
-            //TODO: add filter buttons
+            this.addSlotToContainer(new SlotFilter(this.containerWrapper, i, xOffset - 88 + (i * 22), yOffset - 36));
         }
     }
 
@@ -50,23 +52,6 @@ public class ContainerVoidPouch extends ContainerCoreHP {
             return this.mergeItemStack(stack, invFull, invItem,false);
         }
         return false;
-    }
-
-    @Override
-    public void onContainerClosed(EntityPlayer playerIn) {
-        /* TODO: On close the valid items needs to be updated and the filter items need to be stored in the pouch nbt.
-        ItemPouchVoid.clearWhitelists();
-        for(int i = 0; i < this.inventorySlots.size(); i++) {
-            if(this.getSlot(i) instanceof SlotFilter && this.getSlot(i).getHasStack()) {
-                SlotFilter slot = (SlotFilter) this.getSlot(i);
-                if(slot.getMatchOre()) {
-                    ItemPouchVoid.oreWhitelist.addAll(slot.getOreDicts());
-                }
-                ItemPouchVoid.itemWhitelist.add(slot.getItemString());
-            }
-        }
-        */
-        super.onContainerClosed(playerIn);
     }
 
     @Nonnull
@@ -87,6 +72,8 @@ public class ContainerVoidPouch extends ContainerCoreHP {
             } else {
                 slot.putStack(heldStack.isEmpty() ? ItemStack.EMPTY : heldStack.copy());
             }
+            ((SlotFilter) slot).setMatchMeta(false);
+            ((SlotFilter) slot).setMatchOre(false);
             return player.inventory.getItemStack();
         } else {
             return super.slotClick(slotId, dragType, clickTypeIn, player);

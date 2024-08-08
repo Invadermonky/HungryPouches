@@ -2,7 +2,7 @@ package com.invadermonky.hungrypouches.client.gui.screen;
 
 import com.invadermonky.hungrypouches.handlers.PouchHandler;
 import com.invadermonky.hungrypouches.inventory.containers.ContainerCoreHP;
-import com.invadermonky.hungrypouches.inventory.containers.ContainerHungryPouch;
+import com.invadermonky.hungrypouches.inventory.containers.ContainerPouchHungry;
 import com.invadermonky.hungrypouches.network.MessageClickWindowHP;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -18,9 +18,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nonnull;
 
 @SideOnly(Side.CLIENT)
-public class GuiHungryPouch extends GuiCoreHP {
+public class GuiPouchHungry extends GuiCoreHP {
 
-    public GuiHungryPouch(ContainerHungryPouch inventorySlotsIn) {
+    public GuiPouchHungry(ContainerPouchHungry inventorySlotsIn) {
         super(inventorySlotsIn);
     }
 
@@ -54,7 +54,7 @@ public class GuiHungryPouch extends GuiCoreHP {
                 return;
             }
 
-            if (ContainerHungryPouch.canAddItemToSlotHP(slotIn, this.pouch, itemstack1, true) && this.inventorySlots.canDragIntoSlot(slotIn)) {
+            if (ContainerPouchHungry.canAddItemToSlotHP(slotIn, this.pouch, itemstack1, true) && this.inventorySlots.canDragIntoSlot(slotIn)) {
                 itemstack = itemstack1.copy();
                 flag = true;
                 ContainerCoreHP.computeStackSizeHP(this.dragSplittingSlots, this.dragSplittingLimit, this.pouch, itemstack, slotIn.getStack().isEmpty() ? 0 : slotIn.getStack().getCount());
@@ -152,7 +152,7 @@ public class GuiHungryPouch extends GuiCoreHP {
                         this.draggedStack = this.clickedSlot.getStack().copy();
                     }
                 }
-                else if (this.draggedStack.getCount() > 1 && slot != null && ContainerHungryPouch.canAddItemToSlotHP(slot, this.pouch, this.draggedStack, false)) {
+                else if (this.draggedStack.getCount() > 1 && slot != null && ContainerPouchHungry.canAddItemToSlotHP(slot, this.pouch, this.draggedStack, false)) {
                     long i = Minecraft.getSystemTime();
 
                     if (this.currentDragTargetSlot == slot) {
@@ -170,7 +170,7 @@ public class GuiHungryPouch extends GuiCoreHP {
                 }
             }
         }
-        else if (this.dragSplitting && slot != null && !itemstack.isEmpty() && (itemstack.getCount() > this.dragSplittingSlots.size() || this.dragSplittingLimit == 2) && ContainerHungryPouch.canAddItemToSlotHP(slot, this.pouch, itemstack, true) && slot.isItemValid(itemstack) && this.inventorySlots.canDragIntoSlot(slot)) {
+        else if (this.dragSplitting && slot != null && !itemstack.isEmpty() && (itemstack.getCount() > this.dragSplittingSlots.size() || this.dragSplittingLimit == 2) && ContainerPouchHungry.canAddItemToSlotHP(slot, this.pouch, itemstack, true) && slot.isItemValid(itemstack) && this.inventorySlots.canDragIntoSlot(slot)) {
             this.dragSplittingSlots.add(slot);
             this.updateDragSplitting();
         }
@@ -189,7 +189,7 @@ public class GuiHungryPouch extends GuiCoreHP {
             if(isShiftKeyDown()) {
                 if(!this.shiftClickedSlot.isEmpty()) {
                     for(Slot slot2 : this.inventorySlots.inventorySlots) {
-                        if(slot2 != null && slot2.canTakeStack(this.mc.player) && slot2.getHasStack() && slot2.isSameInventory(slot) && ContainerHungryPouch.canAddItemToSlotHP(slot2, this.pouch, this.shiftClickedSlot, true)) {
+                        if(slot2 != null && slot2.canTakeStack(this.mc.player) && slot2.getHasStack() && slot2.isSameInventory(slot) && ContainerPouchHungry.canAddItemToSlotHP(slot2, this.pouch, this.shiftClickedSlot, true)) {
                             this.handleMouseClick(slot2, slot2.slotNumber, state, ClickType.QUICK_MOVE);
                         }
                     }

@@ -7,11 +7,11 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
-public class SlotHungryPouch extends Slot {
+public class SlotHungry extends Slot {
     protected final InventoryContainerWrapperHP inventoryWrapper;
     protected final ItemStack pouch;
 
-    public SlotHungryPouch(InventoryContainerWrapperHP inventoryWrapper, int index, int xPosition, int yPosition) {
+    public SlotHungry(InventoryContainerWrapperHP inventoryWrapper, int index, int xPosition, int yPosition) {
         super(inventoryWrapper, index, xPosition, yPosition);
         this.inventoryWrapper = inventoryWrapper;
         this.pouch = inventoryWrapper.getContainerStack();

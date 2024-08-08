@@ -28,13 +28,14 @@ public class ReferencesHP {
     public static final GuiSpriteHP SPRITE_SLOT_MOB = new GuiSpriteHP(16,0,16,16);
     public static final GuiSpriteHP SPRITE_SLOT_ORE = new GuiSpriteHP(32,0,16,16);
     public static final GuiSpriteHP SPRITE_SLOT_VOID = new GuiSpriteHP(48,0,16,16);
+    public static final GuiSpriteHP SPRITE_SLOT_FILTER = new GuiSpriteHP(0,16,16,16);
 
-    public static final GuiSpriteHP SPRITE_BUTTON = new GuiSpriteHP(0,16,8,8, true);
+    public static final GuiSpriteHP SPRITE_BUTTON = new GuiSpriteHP(0,32,8,8, true);
 
-    public static final GuiSpriteHP SPRITE_BUTTON_ENABLE = new GuiSpriteHP(16,16,8,8);
-    public static final GuiSpriteHP SPRITE_BUTTON_INVENTORY = new GuiSpriteHP(16,16,8,8);
-    public static final GuiSpriteHP SPRITE_BUTTON_ORE = new GuiSpriteHP(32,16,8,8);
-    public static final GuiSpriteHP SPRITE_BUTTON_META = new GuiSpriteHP(48,16,8,8);
+    public static final GuiSpriteHP SPRITE_BUTTON_ENABLE = new GuiSpriteHP(16,32,8,8);
+    public static final GuiSpriteHP SPRITE_BUTTON_INVENTORY = new GuiSpriteHP(16,32,8,8);
+    public static final GuiSpriteHP SPRITE_BUTTON_ORE = new GuiSpriteHP(32,32,8,8);
+    public static final GuiSpriteHP SPRITE_BUTTON_META = new GuiSpriteHP(48,32,8,8);
 
 
     //Configuration Defaults
@@ -67,10 +68,5 @@ public class ReferencesHP {
             "ore=dustRedstone",
             "type=gem",
             "type=ore"
-    };
-
-    public static final String[] VOID_POUCH_ITEMS_DEFAULTS = new String[] {
-            "ore=cobblestone",
-            "ore=netherrack"
     };
 }

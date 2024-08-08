@@ -2,6 +2,7 @@ package com.invadermonky.hungrypouches.inventory.wrappers;
 
 import com.invadermonky.hungrypouches.handlers.PouchHandler;
 import com.invadermonky.hungrypouches.handlers.StackHandlerFilter;
+import com.invadermonky.hungrypouches.items.pouches.ItemPouchVoid;
 import com.invadermonky.hungrypouches.util.ReferencesHP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -135,6 +136,13 @@ public class FilterContainerWrapperHP implements IInventory {
     @Override
     public void markDirty() {
         this.saveStacks();
+        ItemPouchVoid.clearWhitelists();
+        for(StackHandlerFilter filter : this.filter) {
+            if(filter.getMatchOre()) {
+                ItemPouchVoid.oreWhitelist.addAll(filter.getOreDicts());
+            }
+            ItemPouchVoid.itemWhitelist.add(filter.getItemString());
+        }
     }
 
     @Override

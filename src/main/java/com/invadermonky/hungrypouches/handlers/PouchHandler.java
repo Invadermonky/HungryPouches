@@ -1,9 +1,9 @@
 package com.invadermonky.hungrypouches.handlers;
 
 import com.invadermonky.hungrypouches.HungryPouches;
-import com.invadermonky.hungrypouches.init.EnchantmentRegistryHP;
-import com.invadermonky.hungrypouches.init.SoundRegistryHP;
-import com.invadermonky.hungrypouches.inventory.slots.SlotHungryPouch;
+import com.invadermonky.hungrypouches.init.ModEnchantsHP;
+import com.invadermonky.hungrypouches.init.ModSoundsHP;
+import com.invadermonky.hungrypouches.inventory.slots.SlotHungry;
 import com.invadermonky.hungrypouches.items.AbstractPouchHP;
 import com.invadermonky.hungrypouches.items.IHungryPouch;
 import com.invadermonky.hungrypouches.items.pouches.ItemPouchSkeletal;
@@ -71,9 +71,9 @@ public class PouchHandler {
      */
     public static int getMaxStackSize(ItemStack pouch) {
         int size = 64;
-        if(!EnchantmentRegistryHP.enableInsatiableEnchant)
+        if(!ModEnchantsHP.enableInsatiableEnchant)
             return size;
-        int enchLevel = EnchantmentHelper.getEnchantmentLevel(EnchantmentRegistryHP.insatiable, pouch);
+        int enchLevel = EnchantmentHelper.getEnchantmentLevel(ModEnchantsHP.INSATIABLE, pouch);
         return ConfigHandlerHP.HUNGRY_POUCH_ENCHANTS.INSATIABLE.exponentialInsatiable ? size * (int) Math.pow(2, enchLevel) : size * (1 + enchLevel);
     }
 
@@ -86,9 +86,9 @@ public class PouchHandler {
      */
     public static int getMaxStackSize(ItemStack pouch, ItemStack item) {
         int size = item.getMaxStackSize();
-        if(size == 1 || !EnchantmentRegistryHP.enableInsatiableEnchant)
+        if(size == 1 || !ModEnchantsHP.enableInsatiableEnchant)
             return size;
-        int enchLevel = EnchantmentHelper.getEnchantmentLevel(EnchantmentRegistryHP.insatiable, pouch);
+        int enchLevel = EnchantmentHelper.getEnchantmentLevel(ModEnchantsHP.INSATIABLE, pouch);
         return ConfigHandlerHP.HUNGRY_POUCH_ENCHANTS.INSATIABLE.exponentialInsatiable ? size * (int) Math.pow(2, enchLevel) : size * (1 + enchLevel);
     }
 
@@ -101,7 +101,7 @@ public class PouchHandler {
      * @return Max stack size for the item in the hungry pouch
      */
     public static int getMaxStackSize(ItemStack pouch, ItemStack item, Slot slot) {
-        return (slot instanceof SlotHungryPouch) ? getMaxStackSize(pouch, item) : Math.min(item.getMaxStackSize(), slot.getSlotStackLimit());
+        return (slot instanceof SlotHungry) ? getMaxStackSize(pouch, item) : Math.min(item.getMaxStackSize(), slot.getSlotStackLimit());
     }
 
     /**
@@ -190,7 +190,7 @@ public class PouchHandler {
      */
     public static SoundEvent getPickupSound(ItemStack pouch) {
         if(HolidayHelper.isAprilFools()) {
-            return SoundRegistryHP.april_1_pickup;
+            return ModSoundsHP.APRIL_1_PICKUP;
         } else if(pouch.getItem() instanceof ItemPouchSkeletal) {
             return ConfigHandlerHP.SKELETAL_POUCH.enableRattlePickup ? SoundEvents.ENTITY_SKELETON_HURT : SoundEvents.ENTITY_ITEM_PICKUP;
         } else if(pouch.getItem() instanceof ItemPouchVoid) {
@@ -207,7 +207,7 @@ public class PouchHandler {
         float volume = 0.3f;
         float pitch = (rand.nextFloat() - rand.nextFloat() * 0.7f + 1.0f);
 
-        if(sound == SoundRegistryHP.april_1_pickup) {
+        if(sound == ModSoundsHP.APRIL_1_PICKUP) {
             pitch = 1.0f;
         } else if(sound == SoundEvents.ENTITY_SKELETON_HURT) {
             volume = 0.075f;

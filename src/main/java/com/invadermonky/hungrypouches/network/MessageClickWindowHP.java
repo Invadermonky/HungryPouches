@@ -1,6 +1,6 @@
 package com.invadermonky.hungrypouches.network;
 
-import com.invadermonky.hungrypouches.inventory.containers.ContainerHungryPouch;
+import com.invadermonky.hungrypouches.inventory.containers.ContainerPouchHungry;
 import com.invadermonky.hungrypouches.util.NetworkHelper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -76,8 +76,8 @@ public class MessageClickWindowHP implements IMessage {
                             playerMP.openContainer.detectAndSendChanges();
                             playerMP.updateHeldItem();
                             playerMP.isChangingQuantityOnly = false;
-                        } else if(container instanceof ContainerHungryPouch) {
-                            ((ContainerHungryPouch) container).syncInventory(playerMP);
+                        } else if(container instanceof ContainerPouchHungry) {
+                            ((ContainerPouchHungry) container).syncInventory(playerMP);
                         } else {
                             NonNullList<ItemStack> nonNullList = NonNullList.create();
                             for(int i = 0; i < container.inventorySlots.size(); i++) {

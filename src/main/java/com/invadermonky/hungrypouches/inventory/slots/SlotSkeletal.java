@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nullable;
 
-public class SlotSkeletalPouch extends Slot {
+public class SlotSkeletal extends Slot {
     public final InventoryContainerWrapperHP containerWrapper;
     public final int slotIndex;
     public final IHungryPouch validPouch;
@@ -18,7 +18,7 @@ public class SlotSkeletalPouch extends Slot {
     /**
      * Creates a slot locked to a specific Hungry Pouch item.
      */
-    public SlotSkeletalPouch(InventoryContainerWrapperHP inventoryIn, int index, int xPosition, int yPosition, @Nullable Item validPouch) {
+    public SlotSkeletal(InventoryContainerWrapperHP inventoryIn, int index, int xPosition, int yPosition, @Nullable Item validPouch) {
         super(inventoryIn, index, xPosition, yPosition);
         this.containerWrapper = inventoryIn;
         this.slotIndex = index;
@@ -28,7 +28,7 @@ public class SlotSkeletalPouch extends Slot {
     /**
      * Creates a slot that will accept all items excluding Hungry Pouches.
      */
-    public SlotSkeletalPouch(InventoryContainerWrapperHP inventoryIn, int index, int xPosition, int yPosition) {
+    public SlotSkeletal(InventoryContainerWrapperHP inventoryIn, int index, int xPosition, int yPosition) {
         this(inventoryIn, index, xPosition, yPosition, null);
     }
 

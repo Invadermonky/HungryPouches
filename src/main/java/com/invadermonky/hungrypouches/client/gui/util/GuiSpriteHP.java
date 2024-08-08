@@ -70,6 +70,7 @@ public class GuiSpriteHP {
         Minecraft minecraft = Minecraft.getMinecraft();
         minecraft.getTextureManager().bindTexture(ReferencesHP.GUI_SPRITE_SHEET);
         GlStateManager.color(1.0f, 1.0f, 1.0f, alpha);
+        GlStateManager.disableLighting();
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);

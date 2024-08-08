@@ -135,7 +135,7 @@ public abstract class ContainerCoreHP extends Container {
 
         if (stack.getCount() > 0) {
             i = !reverse ? startIndex : endIndex - 1;
-            while(stack.getCount() > 0 && (!reverse && i < this.inventorySlots.size() || reverse && i >= startIndex)) {
+            while(stack.getCount() > 0 && (!reverse && i < endIndex || reverse && i >= startIndex)) {
                 slot = this.inventorySlots.get(i);
 
                 existingStack = slot.getStack();

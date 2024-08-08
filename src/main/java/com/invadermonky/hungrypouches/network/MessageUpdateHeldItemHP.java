@@ -1,6 +1,7 @@
 package com.invadermonky.hungrypouches.network;
 
-import com.invadermonky.hungrypouches.inventory.containers.ContainerSkeletalPouch;
+import com.invadermonky.hungrypouches.inventory.containers.ContainerPouchSkeletal;
+import com.invadermonky.hungrypouches.inventory.containers.ContainerPouchVoid;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -13,10 +14,22 @@ public class MessageUpdateHeldItemHP implements IMessage {
     public int windowId;
     public short transactionId;
     public int slotId;
+    public boolean filterMeta;
+    public boolean filterOre;
     public ItemStack updateStack;
 
     public MessageUpdateHeldItemHP() {
         this.updateStack = ItemStack.EMPTY;
+    }
+
+    public MessageUpdateHeldItemHP(int windowId, short transactionId, int slotId, boolean filterMeta, boolean filterOre) {
+        this(windowId, transactionId, slotId);
+        this.filterMeta = filterMeta;
+        this.filterOre = filterOre;
+    }
+
+    public MessageUpdateHeldItemHP(int windowId, short transactionId, int slotId) {
+        this(windowId, transactionId, slotId, ItemStack.EMPTY);
     }
 
     public MessageUpdateHeldItemHP(int windowId, short transactionId, int slotId, ItemStack updateStack) {
@@ -31,6 +44,8 @@ public class MessageUpdateHeldItemHP implements IMessage {
         this.windowId = buf.readByte();
         this.transactionId = buf.readShort();
         this.slotId = buf.readInt();
+        this.filterMeta = buf.readBoolean();
+        this.filterOre = buf.readBoolean();
         this.updateStack = ByteBufUtils.readItemStack(buf);
     }
 
@@ -39,6 +54,8 @@ public class MessageUpdateHeldItemHP implements IMessage {
         buf.writeByte(this.windowId);
         buf.writeShort(this.transactionId);
         buf.writeInt(this.slotId);
+        buf.writeBoolean(this.filterMeta);
+        buf.writeBoolean(this.filterOre);
         ByteBufUtils.writeItemStack(buf, this.updateStack);
     }
 
@@ -49,8 +66,8 @@ public class MessageUpdateHeldItemHP implements IMessage {
             if(playerMP != null) {
                 playerMP.getServerWorld().addScheduledTask(() -> {
                     playerMP.markPlayerActive();
-                    if(playerMP.openContainer instanceof ContainerSkeletalPouch) {
-                        ContainerSkeletalPouch container = (ContainerSkeletalPouch) playerMP.openContainer;
+                    if(playerMP.openContainer instanceof ContainerPouchSkeletal) {
+                        ContainerPouchSkeletal container = (ContainerPouchSkeletal) playerMP.openContainer;
                         if (container.windowId == message.windowId && container.getCanCraft(playerMP)) {
                             ItemStack slotStack = container.getContainerWrapper().getStackInSlot(message.slotId);
                             if(!ItemStack.areItemStacksEqualUsingNBTShareTag(slotStack, message.updateStack)) {
@@ -58,6 +75,11 @@ public class MessageUpdateHeldItemHP implements IMessage {
                             }
                             container.detectAndSendChanges();
                         }
+                    } else if(playerMP.openContainer instanceof ContainerPouchVoid && message.windowId == playerMP.openContainer.windowId) {
+                        ContainerPouchVoid container = (ContainerPouchVoid) playerMP.openContainer;
+                        container.getContainerWrapper().setSlotMatchMeta(message.slotId, message.filterMeta);
+                        container.getContainerWrapper().setSlotMatchOre(message.slotId, message.filterOre);
+                        container.getContainerWrapper().markDirty();
                     }
                 });
             }

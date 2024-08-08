@@ -11,6 +11,7 @@ import gnu.trove.set.hash.THashSet;
 import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
@@ -52,12 +53,12 @@ public class ItemPouchVoid extends AbstractPouchHP implements IHungryPouch {
 
     @Override
     public THashSet<String> getValidItems() {
-        return itemWhitelist.isEmpty() ? (itemWhitelist = new THashSet<>()) : itemWhitelist;
+        return itemWhitelist == null ? (itemWhitelist = new THashSet<>()) : itemWhitelist;
     }
 
     @Override
     public TIntHashSet getValidOres() {
-        return oreWhitelist.isEmpty() ? (oreWhitelist = new TIntHashSet()) : oreWhitelist;
+        return oreWhitelist == null ? (oreWhitelist = new TIntHashSet()) : oreWhitelist;
     }
 
     @Override
@@ -77,6 +78,11 @@ public class ItemPouchVoid extends AbstractPouchHP implements IHungryPouch {
         }
     }
 
+    @Override
+    public boolean onEntitySwing(@Nonnull EntityLivingBase entityLiving, @Nonnull ItemStack stack) {
+        return false;
+    }
+
     @Nonnull
     @Override
     public ActionResult<ItemStack> onItemRightClick(@Nonnull World world, EntityPlayer player, EnumHand hand) {
@@ -91,20 +97,20 @@ public class ItemPouchVoid extends AbstractPouchHP implements IHungryPouch {
     @Override
     protected void addDefaultTooltip(ItemStack stack, List<String> tooltip) {
         if(PouchHandler.isEnabled(stack))
-            tooltip.add(I18n.format(StringHelper.getLanguageKey("enabled", "tooltip")));
+            tooltip.add(I18n.format(StringHelper.getTranslationKey("enabled", "tooltip")));
         else
-            tooltip.add(I18n.format(StringHelper.getLanguageKey("disabled", "tooltip")));
+            tooltip.add(I18n.format(StringHelper.getTranslationKey("disabled", "tooltip")));
     }
 
     @Override
     protected void addShiftTooltip(ItemStack stack, List<String> tooltip) {
-        tooltip.add(I18n.format(StringHelper.getLanguageKey(Objects.requireNonNull(getRegistryName()).getPath() + ".desc", "tooltip")));
+        tooltip.add(I18n.format(StringHelper.getTranslationKey(Objects.requireNonNull(getRegistryName()).getPath(), "tooltip", "desc")));
 
         TreeMap<Integer, StackHandlerFilter> filter = PouchHandler.getFilterContents(stack);
         if(filter.isEmpty()) {
-            tooltip.add(I18n.format(StringHelper.getLanguageKey("empty", "tooltip")));
+            tooltip.add(I18n.format(StringHelper.getTranslationKey("empty", "tooltip")));
         } else {
-            tooltip.add(I18n.format(StringHelper.getLanguageKey("filter", "tooltip")));
+            tooltip.add(I18n.format(StringHelper.getTranslationKey("filter", "tooltip")));
             filter.forEach((slot, filterHandler) -> {
                 if(!filterHandler.isEmpty()) {
                     tooltip.add(String.format("   [%s/%s] %s",
@@ -115,50 +121,10 @@ public class ItemPouchVoid extends AbstractPouchHP implements IHungryPouch {
                 }
             });
         }
-
-        /* TODO: Add tooltip for accepted items.
-        tooltip.add("");
-
-        tooltip.add("Filter:");
-
-        tooltip.add(String.format("   [%s|%s] %s",
-                TextFormatting.YELLOW + "Meta" + TextFormatting.GRAY,
-                TextFormatting.DARK_GRAY + "Ore" + TextFormatting.GRAY,
-                TextFormatting.WHITE + (new ItemStack(Blocks.COBBLESTONE)).getDisplayName()
-        ));
-
-        tooltip.add(String.format("   [%s|%s] %s",
-                TextFormatting.DARK_GRAY + "Meta" + TextFormatting.GRAY,
-                TextFormatting.YELLOW + "Ore" + TextFormatting.GRAY,
-                TextFormatting.WHITE + (new ItemStack(Blocks.COBBLESTONE)).getDisplayName()
-        ));
-
-        tooltip.add(String.format("   [%s|%s] %s",
-                TextFormatting.GREEN + "Meta" + TextFormatting.GRAY,
-                TextFormatting.DARK_GRAY + "Ore" + TextFormatting.GRAY,
-                TextFormatting.WHITE + (new ItemStack(Blocks.COBBLESTONE)).getDisplayName()
-        ));
-
-        tooltip.add(String.format("   [%s|%s] %s",
-                TextFormatting.DARK_GRAY + "Meta" + TextFormatting.GRAY,
-                TextFormatting.GREEN + "Ore" + TextFormatting.GRAY,
-                TextFormatting.WHITE + (new ItemStack(Blocks.COBBLESTONE)).getDisplayName()
-        ));
-
-        This will be set up based on the filter. It will show the filter items in the following format:
-
-            Filter:
-                Meta/Ore - item1
-                Meta/Ore - item2
-
-            "item" will be white
-            "ore" will be either green or dark gray depending on active status
-            "meta" will be either green or dark gray depending on active status
-         */
     }
 
     @Override
     protected void addCtrlTooltip(ItemStack stack, List<String> tooltip) {
-        tooltip.add(I18n.format(StringHelper.getLanguageKey("enableinfo", "tooltip")));
+        tooltip.add(I18n.format(StringHelper.getTranslationKey("enableinfo", "tooltip")));
     }
 }

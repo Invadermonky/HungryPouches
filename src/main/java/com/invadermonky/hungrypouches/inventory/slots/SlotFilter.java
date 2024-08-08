@@ -1,28 +1,36 @@
 package com.invadermonky.hungrypouches.inventory.slots;
 
 import com.invadermonky.hungrypouches.inventory.wrappers.FilterContainerWrapperHP;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class SlotFilter extends Slot {
     protected final FilterContainerWrapperHP filterWrapper;
-    protected int slotIndex;
+    public final int slotIndex;
+    public boolean matchMeta;
+    public boolean matchOre;
 
     public SlotFilter(FilterContainerWrapperHP inventoryIn, int index, int xPosition, int yPosition) {
         super(inventoryIn, index, xPosition, yPosition);
         this.filterWrapper = inventoryIn;
         this.slotIndex = index;
+        this.matchMeta = inventoryIn.getSlotMatchMeta(index);
+        this.matchOre = inventoryIn.getSlotMatchOre(index);
     }
 
     public boolean getMatchMeta() {
-        return this.filterWrapper.getSlotMatchMeta(this.slotIndex);
+        return this.matchMeta;
     }
 
     public void setMatchMeta(boolean matchMeta) {
-        this.filterWrapper.setSlotMatchMeta(this.slotIndex, matchMeta);
+        this.matchMeta = matchMeta;
+        this.filterWrapper.setSlotMatchMeta(this.slotIndex, this.matchMeta);
     }
 
     public String getItemString() {
@@ -30,11 +38,12 @@ public class SlotFilter extends Slot {
     }
 
     public boolean getMatchOre() {
-        return this.filterWrapper.getSlotMatchOre(this.slotIndex);
+        return this.matchOre;
     }
 
     public void setMatchOre(boolean matchOre) {
-        this.filterWrapper.setSlotMatchOre(this.slotIndex, matchOre);
+        this.matchOre = matchOre;
+        this.filterWrapper.setSlotMatchOre(this.slotIndex, this.matchOre);
     }
 
     public int[] getOreDicts() {

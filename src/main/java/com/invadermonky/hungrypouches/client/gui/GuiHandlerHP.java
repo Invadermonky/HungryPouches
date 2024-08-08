@@ -1,11 +1,11 @@
 package com.invadermonky.hungrypouches.client.gui;
 
-import com.invadermonky.hungrypouches.client.gui.screen.GuiHungryPouch;
-import com.invadermonky.hungrypouches.client.gui.screen.GuiSkeletalPouch;
-import com.invadermonky.hungrypouches.client.gui.screen.GuiVoidPouch;
-import com.invadermonky.hungrypouches.inventory.containers.ContainerHungryPouch;
-import com.invadermonky.hungrypouches.inventory.containers.ContainerSkeletalPouch;
-import com.invadermonky.hungrypouches.inventory.containers.ContainerVoidPouch;
+import com.invadermonky.hungrypouches.client.gui.screen.GuiPouchHungry;
+import com.invadermonky.hungrypouches.client.gui.screen.GuiPouchSkeletal;
+import com.invadermonky.hungrypouches.client.gui.screen.GuiPouchVoid;
+import com.invadermonky.hungrypouches.inventory.containers.ContainerPouchHungry;
+import com.invadermonky.hungrypouches.inventory.containers.ContainerPouchSkeletal;
+import com.invadermonky.hungrypouches.inventory.containers.ContainerPouchVoid;
 import com.invadermonky.hungrypouches.items.IHungryPouch;
 import com.invadermonky.hungrypouches.items.pouches.ItemPouchSkeletal;
 import com.invadermonky.hungrypouches.items.pouches.ItemPouchVoid;
@@ -22,17 +22,17 @@ public class GuiHandlerHP implements IGuiHandler {
         switch (ID) {
             case 0:
                 if(player.getHeldItemMainhand().getItem() instanceof IHungryPouch) {
-                    return new ContainerHungryPouch(player.getHeldItemMainhand(), player.inventory);
+                    return new ContainerPouchHungry(player.getHeldItemMainhand(), player.inventory);
                 }
                 break;
             case 1:
                 if(player.getHeldItemMainhand().getItem() instanceof ItemPouchVoid) {
-                    return new ContainerVoidPouch(player.getHeldItemMainhand(), player.inventory, player);
+                    return new ContainerPouchVoid(player.getHeldItemMainhand(), player.inventory, player);
                 }
                 break;
             case 2:
                 if(player.getHeldItemMainhand().getItem() instanceof ItemPouchSkeletal) {
-                    return new ContainerSkeletalPouch(player.getHeldItemMainhand(), player.inventory);
+                    return new ContainerPouchSkeletal(player.getHeldItemMainhand(), player.inventory);
                 }
                 break;
         }
@@ -45,17 +45,17 @@ public class GuiHandlerHP implements IGuiHandler {
         switch(ID) {
             case 0:
                 if(player.getHeldItemMainhand().getItem() instanceof IHungryPouch) {
-                    return new GuiHungryPouch(new ContainerHungryPouch(player.getHeldItemMainhand(), player.inventory));
+                    return new GuiPouchHungry(new ContainerPouchHungry(player.getHeldItemMainhand(), player.inventory));
                 }
                 break;
             case 1:
                 if(player.getHeldItemMainhand().getItem() instanceof ItemPouchVoid) {
-                    return new GuiVoidPouch(new ContainerVoidPouch(player.getHeldItemMainhand(), player.inventory, player), player);
+                    return new GuiPouchVoid(new ContainerPouchVoid(player.getHeldItemMainhand(), player.inventory, player), player);
                 }
                 break;
             case 2:
                 if(player.getHeldItemMainhand().getItem() instanceof ItemPouchSkeletal) {
-                    return new GuiSkeletalPouch(new ContainerSkeletalPouch(player.getHeldItemMainhand(), player.inventory));
+                    return new GuiPouchSkeletal(new ContainerPouchSkeletal(player.getHeldItemMainhand(), player.inventory));
                 }
                 break;
         }

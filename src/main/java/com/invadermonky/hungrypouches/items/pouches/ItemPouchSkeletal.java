@@ -3,7 +3,7 @@ package com.invadermonky.hungrypouches.items.pouches;
 import com.invadermonky.hungrypouches.handlers.ConfigHandlerHP;
 import com.invadermonky.hungrypouches.handlers.PouchHandler;
 import com.invadermonky.hungrypouches.handlers.StackHandlerPouch;
-import com.invadermonky.hungrypouches.init.ItemRegistryHP;
+import com.invadermonky.hungrypouches.init.ModItemsHP;
 import com.invadermonky.hungrypouches.items.AbstractPouchHP;
 import com.invadermonky.hungrypouches.util.RayTraceHelper;
 import com.invadermonky.hungrypouches.util.ReferencesHP;
@@ -44,16 +44,16 @@ public class ItemPouchSkeletal extends AbstractPouchHP {
     public static List<Item> getRegisteredPouches() {
         List<Item> pouchList = new ArrayList<>();
         if(ConfigHandlerHP.CROP_POUCH.enablePouch) {
-            pouchList.add(ItemRegistryHP.cropPouch);
+            pouchList.add(ModItemsHP.POUCH_CROP);
         }
         if(ConfigHandlerHP.MOB_POUCH.enablePouch) {
-            pouchList.add(ItemRegistryHP.mobPouch);
+            pouchList.add(ModItemsHP.POUCH_MOB);
         }
         if(ConfigHandlerHP.ORE_POUCH.enablePouch) {
-            pouchList.add(ItemRegistryHP.orePouch);
+            pouchList.add(ModItemsHP.POUCH_ORE);
         }
         if(ConfigHandlerHP.VOID_POUCH.enablePouch) {
-            pouchList.add(ItemRegistryHP.voidPouch);
+            pouchList.add(ModItemsHP.POUCH_VOID);
         }
         return pouchList;
     }
@@ -127,29 +127,33 @@ public class ItemPouchSkeletal extends AbstractPouchHP {
     @Override
     protected void addDefaultTooltip(ItemStack stack, List<String> tooltip) {
         if(PouchHandler.isEnabled(stack))
-            tooltip.add(I18n.format(StringHelper.getLanguageKey("feeding", "tooltip")));
+            tooltip.add(I18n.format(StringHelper.getTranslationKey("feeding", "tooltip")));
         else
-            tooltip.add(I18n.format(StringHelper.getLanguageKey("disabled", "tooltip")));
+            tooltip.add(I18n.format(StringHelper.getTranslationKey("disabled", "tooltip")));
     }
 
     @Override
-    protected void addNoKeyTooltip(ItemStack stack, List<String> tooltip) {}
-
-    @Override
     protected void addShiftTooltip(ItemStack stack, List<String> tooltip) {
-        tooltip.add(I18n.format(StringHelper.getLanguageKey(Objects.requireNonNull(getRegistryName()).getPath() + ".desc", "tooltip")));
+        tooltip.add(I18n.format(StringHelper.getTranslationKey(Objects.requireNonNull(getRegistryName()).getPath() + ".desc", "tooltip")));
 
         TreeMap<Integer, StackHandlerPouch> contents = PouchHandler.getPouchContents(stack);
         if(contents.isEmpty()) {
-            tooltip.add(I18n.format(StringHelper.getLanguageKey("empty", "tooltip")));
+            tooltip.add(I18n.format(StringHelper.getTranslationKey("empty", "tooltip")));
         } else {
-            tooltip.add(I18n.format(StringHelper.getLanguageKey("contents", "tooltip")));
+            tooltip.add(I18n.format(StringHelper.getTranslationKey("contents", "tooltip")));
             for(StackHandlerPouch slotHandler : contents.values()) {
                 ItemStack stackSlot = slotHandler.getStack();
-                String enabled = PouchHandler.isEnabled(stackSlot) ? I18n.format(StringHelper.getLanguageKey("enabled", "tooltip")) : I18n.format(StringHelper.getLanguageKey("disabled", "tooltip"));
+                String enabled = PouchHandler.isEnabled(stackSlot) ? I18n.format(StringHelper.getTranslationKey("enabled", "tooltip")) : I18n.format(StringHelper.getTranslationKey("disabled", "tooltip"));
                 tooltip.add("   " + TextFormatting.RESET + stackSlot.getDisplayName() + " - " + enabled);
             }
         }
+    }
+
+    @Override
+    protected void addCtrlTooltip(ItemStack stack, List<String> tooltip) {
+        tooltip.add(I18n.format(StringHelper.getTranslationKey("enableinfo", "tooltip")));
+        tooltip.add(I18n.format(StringHelper.getTranslationKey("transferskeletalinfo", "tooltip")));
+        tooltip.add(I18n.format(StringHelper.getTranslationKey("shuffleskeletalinfo", "tooltip")));
     }
 
     @Override

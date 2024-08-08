@@ -5,7 +5,7 @@
   "description": "Adds a few specialized pouches to the game.",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "",
+  "url": "https://www.curseforge.com/minecraft/mc-mods/hungry-pouches",
   "updateUrl": "",
   "authorList": ["Invadermonky"],
   "credits": "Authors of this project",

@@ -2,7 +2,6 @@ package com.invadermonky.hungrypouches.client.gui.element;
 
 import com.invadermonky.hungrypouches.client.gui.util.GuiSpriteHP;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.Slot;
 

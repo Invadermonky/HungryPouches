@@ -1,7 +1,7 @@
 package com.invadermonky.hungrypouches.inventory.containers;
 
 import com.invadermonky.hungrypouches.handlers.PouchHandler;
-import com.invadermonky.hungrypouches.inventory.slots.SlotHungryPouch;
+import com.invadermonky.hungrypouches.inventory.slots.SlotHungry;
 import com.invadermonky.hungrypouches.inventory.wrappers.InventoryContainerWrapperHP;
 import com.invadermonky.hungrypouches.network.MessageSlotContentsHP;
 import com.invadermonky.hungrypouches.network.PacketHandlerHP;
@@ -13,11 +13,11 @@ import net.minecraft.network.play.server.SPacketSetSlot;
 
 import javax.annotation.Nonnull;
 
-public class ContainerHungryPouch extends ContainerCoreHP {
+public class ContainerPouchHungry extends ContainerCoreHP {
     protected final InventoryContainerWrapperHP containerWrapper;
     protected final int rowSize;
 
-    public ContainerHungryPouch(ItemStack pouch, InventoryPlayer inventory) {
+    public ContainerPouchHungry(ItemStack pouch, InventoryPlayer inventory) {
         super(pouch, inventory);
         this.containerWrapper = new InventoryContainerWrapperHP(pouch);
         this.rowSize = PouchHandler.getMaxSlots(this.pouch) / 3;
@@ -30,7 +30,7 @@ public class ContainerHungryPouch extends ContainerCoreHP {
         int yOffset = 16;
 
         for (int i = 0; i < PouchHandler.getMaxSlots(this.pouch); i++) {
-            this.addSlotToContainer(new SlotHungryPouch(this.containerWrapper, i, xOffset + i % this.rowSize * 20, yOffset + i / this.rowSize * 20));
+            this.addSlotToContainer(new SlotHungry(this.containerWrapper, i, xOffset + i % this.rowSize * 20, yOffset + i / this.rowSize * 20));
         }
     }
 

@@ -1,6 +1,6 @@
 package com.invadermonky.hungrypouches.network;
 
-import com.invadermonky.hungrypouches.inventory.containers.ContainerHungryPouch;
+import com.invadermonky.hungrypouches.inventory.containers.ContainerPouchHungry;
 import com.invadermonky.hungrypouches.util.NetworkHelper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
@@ -56,7 +56,7 @@ public class MessageSlotContentsHP implements IMessage {
             EntityPlayer player = mc.player;
             if (player != null) {
                 mc.addScheduledTask(() -> {
-                    if (player.openContainer instanceof ContainerHungryPouch && message.windowId == player.openContainer.windowId) {
+                    if (player.openContainer instanceof ContainerPouchHungry && message.windowId == player.openContainer.windowId) {
                         (player.openContainer.inventorySlots.get(message.slot)).putStack(message.stack);
                     }
                 });

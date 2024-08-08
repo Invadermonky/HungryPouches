@@ -2,11 +2,12 @@ package com.invadermonky.hungrypouches.client.gui.element;
 
 import com.invadermonky.hungrypouches.client.gui.util.GuiSpriteHP;
 import com.invadermonky.hungrypouches.inventory.slots.SlotFilter;
+import com.invadermonky.hungrypouches.util.StringHelper;
 
 public class GuiButtonFilterHP extends GuiButtonHP {
     protected final GuiSpriteHP buttonOverlay;
     /** True if this button is a Meta-matching filter button, false if it is an Ore-matching filter button. */
-    protected final boolean metaButton;
+    public final boolean metaButton;
 
     public GuiButtonFilterHP(SlotFilter slot, GuiSpriteHP buttonOverlay, boolean metaButton, int buttonId, int x, int y) {
         super(slot, buttonId, x, y);
@@ -14,8 +15,12 @@ public class GuiButtonFilterHP extends GuiButtonHP {
         this.metaButton = metaButton;
     }
 
-    protected SlotFilter getSlot() {
+    public SlotFilter getSlot() {
         return (SlotFilter) this.linkedSlot;
+    }
+
+    public String getTooltip() {
+        return StringHelper.getTranslationKey("button_" + (metaButton ? "meta" : "ore"), "tooltip", (isButtonDown() ? "enabled" : "disabled"));
     }
 
     @Override

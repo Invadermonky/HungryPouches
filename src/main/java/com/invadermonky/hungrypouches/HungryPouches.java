@@ -18,11 +18,11 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 public class HungryPouches {
     public static final String MOD_ID = "hungrypouches";
     public static final String MOD_NAME = "Hungry Pouches";
-    public static final String MOD_VERSION = "1.12.2-0.0.5";
+    public static final String MOD_VERSION = "1.12.2-0.0.6";
     public static final String MC_VERSION = "[1.12.2]";
 
-    public static final String ProxyClientClass = "com.invadermonky.hungrypouches.proxy.ClientProxy";
-    public static final String ProxyServerClass = "com.invadermonky.hungrypouches.proxy.CommonProxy";
+    public static final String ProxyClientClass = "com.invadermonky." + MOD_ID + ".proxy.ClientProxy";
+    public static final String ProxyServerClass = "com.invadermonky." + MOD_ID + ".proxy.CommonProxy";
 
     @Mod.Instance(MOD_ID)
     public static HungryPouches INSTANCE;

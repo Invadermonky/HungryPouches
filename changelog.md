@@ -1,7 +1,13 @@
 # Hungry Pouches Changelog
 
+## Version 0.0.6
+- Added missing tooltip information to Skeletal Pouch
+- Overhaul Void Pouch GUI
+
 ## Version 0.0.5
-- 
+- Fixed crash when dragging items
+- Fixed incorrect stack sizes when dragging items
+- Fixed over-stacking items with stack sizes less than 64
 
 ## Version 0.0.4
 - Consuming (Void) Pouch now renders lava in GUI slot
