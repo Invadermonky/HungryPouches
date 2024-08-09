@@ -227,16 +227,23 @@ public class PouchHandler {
      */
     public static boolean isWhitelistedItem(ItemStack pouch, ItemStack stack) {
         try {
-            IHungryPouch pouchItem = (IHungryPouch) pouch.getItem();
-            //Item Whitelist
-            if (pouchItem.getValidItems().contains(Objects.requireNonNull(stack.getItem().getRegistryName()).toString()) ||
-                    pouchItem.getValidItems().contains(stack.getItem().getRegistryName().toString() + ":" + stack.getMetadata())) {
-                return true;
-            }
-            //Ore Whitelist
-            for (int id : OreDictionary.getOreIDs(stack)) {
-                if (pouchItem.getValidOres().contains(id)) {
+            if(pouch.getItem() instanceof ItemPouchVoid) {
+                for(StackHandlerFilter filter : getFilterContents(pouch).values()) {
+                    if(filter.matches(stack))
+                        return true;
+                }
+            } else {
+                IHungryPouch pouchItem = (IHungryPouch) pouch.getItem();
+                //Item Whitelist
+                if (pouchItem.getValidItems().contains(Objects.requireNonNull(stack.getItem().getRegistryName()).toString()) ||
+                        pouchItem.getValidItems().contains(stack.getItem().getRegistryName().toString() + ":" + stack.getMetadata())) {
                     return true;
+                }
+                //Ore Whitelist
+                for (int id : OreDictionary.getOreIDs(stack)) {
+                    if (pouchItem.getValidOres().contains(id)) {
+                        return true;
+                    }
                 }
             }
         } catch(Exception e) {

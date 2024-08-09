@@ -28,9 +28,6 @@ import java.util.Objects;
 import java.util.TreeMap;
 
 public class ItemPouchVoid extends AbstractPouchHP implements IHungryPouch {
-    public static THashSet<String> itemWhitelist = new THashSet<>();
-    public static TIntHashSet oreWhitelist = new TIntHashSet();
-
     public ItemPouchVoid(String unlocName) {
         super(unlocName);
     }
@@ -53,22 +50,17 @@ public class ItemPouchVoid extends AbstractPouchHP implements IHungryPouch {
 
     @Override
     public THashSet<String> getValidItems() {
-        return itemWhitelist == null ? (itemWhitelist = new THashSet<>()) : itemWhitelist;
+        return null;
     }
 
     @Override
     public TIntHashSet getValidOres() {
-        return oreWhitelist == null ? (oreWhitelist = new TIntHashSet()) : oreWhitelist;
+        return null;
     }
 
     @Override
     public GuiSpriteHP getSkeletalSlotBackgroundIcon() {
         return ReferencesHP.SPRITE_SLOT_VOID;
-    }
-
-    public static void clearWhitelists() {
-        itemWhitelist.clear();
-        oreWhitelist.clear();
     }
 
     @Override

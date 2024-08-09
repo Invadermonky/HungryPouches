@@ -17,12 +17,12 @@ public class ItemPouchMob extends AbstractPouchHP implements IHungryPouch {
 
     @Override
     public THashSet<String> getValidItems() {
-        return itemWhitelist.isEmpty() ? (itemWhitelist = new THashSet<>()) : itemWhitelist;
+        return itemWhitelist;
     }
 
     @Override
     public TIntHashSet getValidOres() {
-        return oreWhitelist.isEmpty() ? (oreWhitelist = new TIntHashSet()) : oreWhitelist;
+        return oreWhitelist;
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.invadermonky.hungrypouches.handlers;
 
+import com.google.common.primitives.Ints;
 import com.invadermonky.hungrypouches.util.ReferencesHP;
+import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.OreDictionary;
@@ -68,5 +70,21 @@ public class StackHandlerFilter {
         slotCompound.setBoolean(ReferencesHP.TAG_META, this.matchMeta);
         slotCompound.setBoolean(ReferencesHP.TAG_ORE, this.matchOre);
         return slotCompound;
+    }
+
+    public boolean matches(ItemStack checkStack) {
+        String checkName = checkStack.getItem().delegate.name().toString();
+        String filterName = getItemString();
+        if(filterName.equals(checkName) || filterName.equals(checkName + ":" + checkStack.getMetadata())) {
+            return true;
+        } else if(matchOre) {
+            TIntHashSet checkOres = new TIntHashSet(Ints.asList(OreDictionary.getOreIDs(checkStack)));
+            for(int oreId : getOreDicts()) {
+                if(checkOres.contains(oreId)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

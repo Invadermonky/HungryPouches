@@ -1,14 +1,11 @@
 package com.invadermonky.hungrypouches.inventory.slots;
 
 import com.invadermonky.hungrypouches.inventory.wrappers.FilterContainerWrapperHP;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class SlotFilter extends Slot {
     protected final FilterContainerWrapperHP filterWrapper;
