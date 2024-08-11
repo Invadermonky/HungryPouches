@@ -2,7 +2,7 @@
 
 ## Version 0.0.6
 - Added missing tooltip information to Skeletal Pouch
-- Overhaul Void Pouch GUI
+- Overhaul Consuming (Void) Pouch GUI, players can set voided items
 
 ## Version 0.0.5
 - Fixed crash when dragging items

@@ -50,12 +50,14 @@ public class ItemPouchVoid extends AbstractPouchHP implements IHungryPouch {
 
     @Override
     public THashSet<String> getValidItems() {
-        return null;
+        //Just to prevent null pointers.
+        return new THashSet<>(0);
     }
 
     @Override
     public TIntHashSet getValidOres() {
-        return null;
+        //Just to prevent null pointers.
+        return new TIntHashSet(0);
     }
 
     @Override
@@ -68,11 +70,6 @@ public class ItemPouchVoid extends AbstractPouchHP implements IHungryPouch {
         if(stack.getTagCompound() != null && stack.getTagCompound().hasKey(ReferencesHP.TAG_RAND)) {
             stack.getTagCompound().removeTag(ReferencesHP.TAG_RAND);
         }
-    }
-
-    @Override
-    public boolean onEntitySwing(@Nonnull EntityLivingBase entityLiving, @Nonnull ItemStack stack) {
-        return false;
     }
 
     @Nonnull

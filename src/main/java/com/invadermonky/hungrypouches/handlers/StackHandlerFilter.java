@@ -73,11 +73,14 @@ public class StackHandlerFilter {
     }
 
     public boolean matches(ItemStack checkStack) {
-        String checkName = checkStack.getItem().delegate.name().toString();
-        String filterName = getItemString();
-        if(filterName.equals(checkName) || filterName.equals(checkName + ":" + checkStack.getMetadata())) {
-            return true;
-        } else if(matchOre) {
+        if(this.stack.getItem() == checkStack.getItem()) {
+            if(!matchMeta) {
+                return true;
+            } else if(this.stack.getMetadata() == checkStack.getMetadata()) {
+                return true;
+            }
+        }
+        if(matchOre) {
             TIntHashSet checkOres = new TIntHashSet(Ints.asList(OreDictionary.getOreIDs(checkStack)));
             for(int oreId : getOreDicts()) {
                 if(checkOres.contains(oreId)) {

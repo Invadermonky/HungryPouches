@@ -1,7 +1,6 @@
 package com.invadermonky.hungrypouches.util;
 
 import com.invadermonky.hungrypouches.HungryPouches;
-import net.minecraft.item.ItemStack;
 
 public class StringHelper {
     public static String getTranslationKey(String unloc, String type, String... params) {
@@ -10,9 +9,5 @@ public class StringHelper {
             str.append(".").append(param);
         }
         return str.toString();
-    }
-
-    public static String getItemId(ItemStack stack) {
-        return stack.getItem().delegate.toString();
     }
 }

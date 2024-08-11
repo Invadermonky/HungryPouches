@@ -313,6 +313,9 @@ public class PouchHandler {
      * that do not fit in the pouch (this only occurs when enchants are removed or settings are changed).
      */
     public static void shuffleContents(EntityPlayer player, ItemStack pouch) {
+        if(pouch.getItem() instanceof ItemPouchVoid)
+            return;
+
         TreeMap<Integer, StackHandlerPouch> contents = getPouchContents(pouch);
         TreeMap<Integer, StackHandlerPouch> shuffledContents = new TreeMap<>();
         List<StackHandlerPouch> allItems = new ArrayList<>();
